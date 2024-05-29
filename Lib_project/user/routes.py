@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify,render_template, session
 from app import app
 from user.models import User
 from bson import ObjectId  # Import ObjectId from bson module
@@ -24,7 +24,12 @@ def login():
 
     return jsonify(user), 200  # Return user data as JSON response
 
-@app.route('/logout')
+@app.route('/')
 def logout():
+    session.clear()
     return User().logout()
+
+@app.route('/search')
+def search():
+    return render_template('search.html')
 
