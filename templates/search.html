@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Search Suggestions</title>
+</head>
+<style>
+    body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+  }
+  
+  .container {
+    width: 80%;
+    text-align: center;
+  }
+  
+  .search-container {
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+  
+  .search-bar {
+    width: 100%;
+    max-width: 650px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .buttons-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+  }
+  
+  .suggestion-button,
+  .filter-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 20px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    flex: 1;
+    margin: 0 5px;
+  }
+  
+  .suggestion-button:hover,
+  .filter-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+  }
+  
+  .modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  #filterForm {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #filterForm label {
+    margin-top: 10px;
+  }
+  
+  #filterForm input {
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+</style>
+<body>
+  <div class="container">
+    <div class="search-container">
+      <input type="text" class="search-bar" placeholder="Search for Books">
+      <div class="buttons-container">
+        <button class="suggestion-button">AI/ML</button>
+        <button class="suggestion-button">Mathematics</button>
+        <button class="suggestion-button">Electrical</button>
+        <button class="filter-button">Filter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Modal -->
+  <div id="filterModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Filter Books</h2>
+      <form id="filterForm">
+        <label for="author">Author:</label>
+        <input type="text" id="author" name="author">
+        
+        <label for="genre">Genre:</label>
+        <input type="text" id="genre" name="genre">
+        
+        <label for="year">Published Year:</label>
+        <input type="number" id="year" name="year">
+        
+        <label for="rating">Rating:</label>
+        <input type="number" id="rating" name="rating" step="0.1" min="0" max="5">
+        
+        <button type="button" onclick="applyFilters()">Apply Filters</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const searchBar = document.querySelector('.search-bar');
+    const buttonsContainer = document.querySelector('.buttons-container');
+    const filterButton = document.querySelector('.filter-button');
+    const filterModal = document.getElementById('filterModal');
+    const closeModal = document.getElementsByClassName('close')[0];
+  
+    searchBar.addEventListener('focus', () => {
+      buttonsContainer.style.display = 'flex';
+      document.querySelector('.search-container').style.transform = 'translateY(-50%)';
+    });
+  
+    searchBar.addEventListener('blur', () => {
+      setTimeout(() => {
+        buttonsContainer.style.display = 'none';
+        document.querySelector('.search-container').style.transform = 'translateY(0)';
+      }, 200); // Delay to allow click event on suggestions
+    });
+  
+    filterButton.addEventListener('click', () => {
+      filterModal.style.display = 'block';
+    });
+  
+    closeModal.onclick = function() {
+      filterModal.style.display = 'none';
+    }
+  
+    window.onclick = function(event) {
+      if (event.target == filterModal) {
+        filterModal.style.display = 'none';
+      }
+    }
+  });
+  
+  function applyFilters() {
+    const author = document.getElementById('author').value;
+    const genre = document.getElementById('genre').value;
+    const year = document.getElementById('year').value;
+    const rating = document.getElementById('rating').value;
+  
+    // Logic to filter books from database based on the filters
+    // For now, we'll just log the filters to the console
+    console.log(`Filtering books by:
+      Author: ${author},
+      Genre: ${genre},
+      Published Year: ${year},
+      Rating: ${rating}`);
+    
+    // Close the modal after applying filters
+    document.getElementById('filterModal').style.display = 'none';
+  }
+  
+  </script>
+</body>
+</html>
