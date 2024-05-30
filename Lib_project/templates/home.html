@@ -65,6 +65,25 @@
             gap: 20px;
         }
 
+        .grid-renew-books {
+    position: relative;
+    text-decoration: none; /* Remove default underline */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.grid-renew-books:hover {
+    transform: translateY(-5px);
+}
+
+
         .grid-item {
             background-color: #ffffff;
             border: 1px solid #e0e0e0;
@@ -400,7 +419,8 @@
                     <div class="advertisement">See what other guys are studying of your same interest</div>
                 </div>
             </div>
-            <div class="grid-item">Suggest some book</div>
+            <a href="#" class="grid-item grid-renew-books">Renew Books</a>
+            
             <div class="grid-item">Feedback</div>
         </div>
     </div>
