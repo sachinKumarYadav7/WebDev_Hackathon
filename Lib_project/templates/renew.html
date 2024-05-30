@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renew a Book - Library Management System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 50px;
+        }
+
+        .container {
+            max-width: 800px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #6f42c1;
+            border-color: #6f42c1;
+        }
+
+        .btn-primary:hover {
+            background-color: #5a379a;
+            border-color: #5a379a;
+        }
+
+        .book-list {
+            margin-bottom: 20px;
+        }
+
+        .navbar {
+            background-color: #6f42c1;
+        }
+
+        .navbar .navbar-brand, .navbar .nav-link {
+            color: #fff;
+        }
+
+        .navbar .nav-link:hover {
+            color: #ddd;
+        }
+
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .select-book {
+            background-color: #6f42c1;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .select-book:hover {
+            background-color: #5a379a;
+            text-decoration: none;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <a class="navbar-brand" href="#">Home</a>
+    </nav>
+
+    <div class="container mt-5">
+        <h2 class="mb-4">Renew the Book</h2>
+        <div id="bookList" class="book-list">
+            <h4>Borrowed Books</h4>
+            <ul class="list-group">
+                <!-- List of borrowed books will be dynamically inserted here -->
+                <li class="list-group-item" data-book-id="1">
+                    R D Sharma 
+                    <button class="btn select-book">Select</button>
+                </li>
+                <li class="list-group-item" data-book-id="2">
+                    Power Electronics 
+                    <button class="btn select-book">Select</button>
+                </li>
+                <li class="list-group-item" data-book-id="3">
+                    Zindagi mai pyar ka mahatua 
+                    <button class="btn select-book">Select</button>
+                </li>
+            </ul>
+        </div>
+        <form id="renewBookForm" style="display: none;">
+            <div class="form-group">
+                <label for="renewalPeriod">Renewal Period (in days)</label>
+                <input type="number" class="form-control" id="renewalPeriod" placeholder="Enter the number of days" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Renew Book</button>
+        </form>
+    </div>
+
+    <script>
+        document.querySelectorAll('.select-book').forEach(button => {
+            button.addEventListener('click', function() {
+                const bookId = this.parentElement.getAttribute('data-book-id');
+                document.getElementById('renewBookForm').style.display = 'block';
+                document.getElementById('renewBookForm').setAttribute('data-selected-book-id', bookId);
+            });
+        });
+
+        document.getElementById('renewBookForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const bookId = this.getAttribute('data-selected-book-id');
+            const renewalPeriod = document.getElementById('renewalPeriod').value;
+
+            // Example: Submit the data to the server using fetch
+            fetch('/renew_book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bookId: bookId,
+                    renewalPeriod: renewalPeriod
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Book renewed successfully!');
+                document.getElementById('renewBookForm').reset();
+                document.getElementById('renewBookForm').style.display = 'none';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred while renewing the book.');
+            });
+        });
+    </script>
+</body>
+</html>
