@@ -131,14 +131,6 @@
             opacity: 1;
         }
 
-        /* @media (max-width: 768px) {
-            .grid-container {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-            .search-bar {
-                width: 80%;
-            }
-        } */
 
         @media (max-width: 576px) {
             .grid-container {
@@ -292,25 +284,43 @@
     #main-container {
     opacity: 1;
     visibility: visible;
-    transition: opacity 1s ease, visibility 1s ease,transform 1s ease;; /* Add transition for visibility */
-    transform: translateX(-20);
+    transition: opacity 1s ease, visibility 1s ease, transform 1s ease;
+    transform: translateY(0px);
 }
 
 #main-container.hidden {
     opacity: 0;
-    transform: translateX(-20);
+    visibility: hidden;
+    transform: translateY(-20px);
 }
 
-    #new-container{
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 1s ease, visibility 1s ease,transform 1s ease;; /* Add transition for visibility */
-        transform: translateY(-20);
-    }
-    #new-container.visible {
+#main-container.backtodash {
     opacity: 1;
-    transform: translateX(-20);
-    }
+    visibility: visible;
+    transform: translateY(0px);
+}
+
+#new-container {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease, visibility 1s ease, transform 1s ease;
+    transform: translateY(20px);
+}
+
+#new-container.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0px);
+}
+
+#new-container.backtodash {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+}
+
+
+
     .dropdown-select {
     padding: 10px 20px;
     font-size: 16px;
@@ -331,26 +341,19 @@
     border-radius: 10px;
     justify-content: center;
 }
-/* option{
-    background-color: #ffffff;
-    border-radius: 10px;
-} */
+
 .recent_searches{
     display: flex;
     justify-content: center;
 }
 
 #inputState{
-    /* padding: 10px 20px; */
     font-size: 16px;
     border: none;
-    /* display: flex;
-    justify-content: center; */
     border-radius: 15px;
     background-color: #aaa;
     color: white;
     cursor: pointer;
-    /* max-width: 180px; */
     transition: background-color 0.3s;
 }
 
@@ -362,12 +365,12 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">
-            <img src="../static/images/iitdh.png" width="30" height="30" alt="IITDH Logo">
+            <img src="../static/images/iitdh.png" width="30" height="30" alt="IITDH Logo" >
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="#" id="dash">Dashboard <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
             {% if session.logged_in %}
@@ -625,30 +628,6 @@
             <h3>Recent Searches</h3>
         </div>
       
-
-        
-        <!-- Filter Modal -->
-        <!-- <div id="filterModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Filter Books</h2>
-                <form id="filterForm">
-                    <label for="author">Author:</label>
-                    <input type="text" id="author" name="author">
-                    
-                    <label for="genre">Genre:</label>
-                    <input type="text" id="genre" name="genre">
-                    
-                    <label for="year">Published Year:</label>
-                    <input type="number" id="year" name="year">
-                    
-                    <label for="rating">Rating:</label>
-                    <input type="number" id="rating" name="rating" step="0.1" min="0" max="5">
-                    
-                    <button type="button" onclick="applyFilters()">Apply Filters</button>
-                </form>
-            </div>
-        </div> -->
     </div>
 
     <script>
@@ -656,20 +635,32 @@
     const mcontainer = document.getElementById('main-container');
     const ncontainer = document.getElementById('new-container');
 
-    // Hide main-container and show new-container with transition
-   
     mcontainer.classList.add('hidden');
-   
-
-    // Set a delay to hide the main-container completely after the transition ends
     setTimeout(function() {
         mcontainer.style.display = 'none';
-        ncontainer.classList.add('visible');
-    // ncontainer.classList.remove('hidden');
-    
-    }, 500); // Match the transition duration
-    
+        ncontainer.style.display = 'block';
+        setTimeout(function() {
+            ncontainer.classList.add('visible');
+        }, 150);
+        
+    }, 200);
 });
+
+document.getElementById("dash").addEventListener("click", function() {
+    const mcontainer = document.getElementById('main-container');
+    const ncontainer = document.getElementById('new-container');
+
+    ncontainer.classList.remove('visible');
+    setTimeout(function() {
+        ncontainer.style.display = 'none';
+        mcontainer.style.display = 'block';
+        setTimeout(function() {
+            mcontainer.classList.remove('hidden');
+        }, 150); // Allow reflow before applying transition
+    }, 200);
+});
+
+
 
 
 
