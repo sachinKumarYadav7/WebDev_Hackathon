@@ -5,367 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Responsive Dashboard</title>
-    
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
+    <link rel="stylesheet" type="text/css" href="../static/css/dashboard.css">
 
-        .container, .new-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            transition: opacity 1s, transform 1s;
-        }
-
-        .container.hidden, .new-container.hidden {
-            opacity: 0;
-            transform: translateY(20px);
-            pointer-events: none;
-        }
-
-        .new-container {
-            display: block;
-        }
-
-        .new-container.visible {
-            display: block;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .navbar {
-            margin-bottom: 20px;
-        }
-
-        .search-bar {
-            width: 100%;
-            max-width: 650px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-        }
-
-        .search-container {
-          margin-bottom: 20px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 10vh;
-      }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .grid-renew-books {
-    position: relative;
-    text-decoration: none; /* Remove default underline */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    padding: 20px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-}
-
-.grid-renew-books:hover {
-    transform: translateY(-5px);
-}
-
-
-        .grid-item {
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            padding: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .grid-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-stack {
-            position: relative;
-            height: 100%;
-        }
-
-        .card {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            position: absolute;
-            width: 100%;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        .advertisement-board {
-            background-color: #f5f5f5;
-            border-radius: 10px;
-            padding: 20px;
-        }
-
-        .advertisement {
-            background-color: #e0f7fa;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .advertisement.active {
-            opacity: 1;
-        }
-
-
-        @media (max-width: 576px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-
-            .search-bar {
-                width: 80%;
-            }
-        }
-
-        /* Modal styling */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0, 0, 0);
-            background-color: rgba(0, 0, 0, 0.4);
-            padding-top: 60px;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .buttons-container {
-      display: flex;
-      justify-content: space-around;
-      gap: 1px;
-      margin-top: 10px;
-    }
-
-    .suggestion-button,
-    .filter-button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 20px;
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-      flex: 1;
-      max-width: 200px;
-      transition: background-color 0.3s;
-    }
-
-    .suggestion-button:hover,
-    .filter-button:hover {
-      background-color: #0056b3;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 1009x;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.4);
-      padding-top: 60px;
-    }
-
-    .modal-content {
-      background-color: #fff;
-      margin: 5% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 500px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      animation: fadeIn 0.3s ease;
-    }
-
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-    }
-
-    .close:hover,
-    .close:focus {
-      color: black;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    
-
-    #filterForm {
-      display: flex;
-      flex-direction: column;
-    }
-
-    #filterForm label {
-      margin-top: 10px;
-      text-align: left;
-    }
-
-    #filterForm input {
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    #filterForm button {
-      margin-top: 20px;
-      padding: 10px;
-      border: none;
-      border-radius: 20px;
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    #filterForm button:hover {
-      background-color: #0056b3;
-    }
-
-    #main-container {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 1s ease, visibility 1s ease, transform 1s ease;
-    transform: translateY(0px);
-}
-
-#main-container.hidden {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-20px);
-}
-
-#main-container.backtodash {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0px);
-}
-
-#new-container {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 1s ease, visibility 1s ease, transform 1s ease;
-    transform: translateY(20px);
-}
-
-#new-container.visible {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0px);
-}
-
-#new-container.backtodash {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(20px);
-}
-
-
-
-    .dropdown-select {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 20px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    max-width: 200px;
-    transition: background-color 0.3s;
-}
-
-.dropdown-select:hover {
-    background-color: #0056b3;
-}
-.form-row{
-    display: flex;
-    border-radius: 10px;
-    justify-content: center;
-}
-
-.recent_searches{
-    display: flex;
-    justify-content: center;
-}
-
-#inputState{
-    font-size: 16px;
-    border: none;
-    border-radius: 15px;
-    background-color: #aaa;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-
-
-
-    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">
-            <img src="../static/images/iitdh.png" width="30" height="30" alt="IITDH Logo" >
+            <img src="../static/images/iitdh.png" width="30" height="30" alt="IITDH Logo">
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
@@ -375,6 +21,11 @@
             </ul>
             {% if session.logged_in %}
             <ul class="navbar-nav ml-auto">
+                <li>
+                    <a class="navbar-brand" href="#" id="mode">
+                        <img src="../static/images/moon.png" width="30" height="30" alt="Mode Toggle" id="imgmode">
+                    </a>
+                </li>
                 <li class="nav-item">
                     <span class="navbar-text">
                         Welcome, {{ session.user.name }}
@@ -393,24 +44,24 @@
 
     <div class="container" id="main-container">
         
-        <div class="grid-container">
-            <div class="grid-item card-stack-demo">
-                <div class="card-stack">
-                    <div class="card" id="card-0">
+        <div class="grid-container" >
+            <div class="grid-item card-stack-demo" id="grid">
+                <div class="card-stack" id="cards">
+                    <div class="card" id="card" >
                         <div class="card-content">
                             <h2>Reminder</h2>
                             <p>Till 22nd of June</p>
                             <p>We hope you remember to return, <span class="highlight">R D Sharma</span>. Please return it before the deadline.</p>
                         </div>
                     </div>
-                    <div class="card" id="card-1">
+                    <div class="card" id="card">
                         <div class="card-content">
                             <h2>Reminder</h2>
                             <p>Of 23rd June</p>
                             <p>We hope you remember to return, <span class="highlight">Power Electronics</span>. Please return it before the deadline.</p>
                         </div>
                     </div>
-                    <div class="card" id="card-2">
+                    <div class="card" id="card">
                         <div class="card-content">
                             <h2>Reminder</h2>
                             <p>Return Book Today</p>
@@ -419,169 +70,19 @@
                     </div>
                 </div>
             </div>
-            <div class="grid-item advertisement-board">
-                <div class="advertisements">
+            <div class="grid-item advertisement-board" id="ad">
+                <div class="advertisements" >
                     <div class="advertisement">You were looking for a Book in AI/ML, here are some</div>
                     <div class="advertisement">Other guys from your branch took this book, have a look</div>
                     <div class="advertisement">See what other guys are studying of your same interest</div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+            <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
                 Launch demo modal
-            </button>
-              
-            <div class="modal fade" id="exampleModalCenter" tabindex="+1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
+            </button> -->
     
-    <style>
         
-        .container {
-            max-width: 800px;
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-group label {
-            font-weight: bold;
-        }
-
-        .btn-primary {
-            background-color: #6f42c1;
-            border-color: #6f42c1;
-        }
-
-        .btn-primary:hover {
-            background-color: #5a379a;
-            border-color: #5a379a;
-        }
-
-        .book-list {
-            margin-bottom: 20px;
-        }
-
-        
-
-        .list-group-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .select-book {
-            background-color: #6f42c1;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-
-        .select-book:hover {
-            background-color: #5a379a;
-            text-decoration: none;
-            color: #fff;
-        }
-    </style>
-<body>
-
-    <div class="container mt-5">
-        <h2 class="mb-4">Renew the Book</h2>
-        <div id="bookList" class="book-list">
-            <h4>Borrowed Books</h4>
-            <ul class="list-group">
-                <!-- List of borrowed books will be dynamically inserted here -->
-                <li class="list-group-item" data-book-id="1">
-                    R D Sharma 
-                    <button class="btn select-book">Select</button>
-                </li>
-                <li class="list-group-item" data-book-id="2">
-                    Power Electronics 
-                    <button class="btn select-book">Select</button>
-                </li>
-                <li class="list-group-item" data-book-id="3">
-                    Zindagi mai pyar ka mahatua 
-                    <button class="btn select-book">Select</button>
-                </li>
-            </ul>
-        </div>
-        <form id="renewBookForm" style="display: none;">
-            <div class="form-group">
-                <label for="renewalPeriod">Renewal Period (in days)</label>
-                <input type="number" class="form-control" id="renewalPeriod" placeholder="Enter the number of days" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Renew Book</button>
-        </form>
-    </div>
-
-    <script>
-        document.querySelectorAll('.select-book').forEach(button => {
-            button.addEventListener('click', function() {
-                const bookId = this.parentElement.getAttribute('data-book-id');
-                document.getElementById('renewBookForm').style.display = 'block';
-                document.getElementById('renewBookForm').setAttribute('data-selected-book-id', bookId);
-            });
-        });
-
-        document.getElementById('renewBookForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            const bookId = this.getAttribute('data-selected-book-id');
-            const renewalPeriod = document.getElementById('renewalPeriod').value;
-
-            // Example: Submit the data to the server using fetch
-            fetch('/renew_book', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    bookId: bookId,
-                    renewalPeriod: renewalPeriod
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                alert('Book renewed successfully!');
-                document.getElementById('renewBookForm').reset();
-                document.getElementById('renewBookForm').style.display = 'none';
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                alert('An error occurred while renewing the book.');
-            });
-        });
-    </script>
-</body>
-</html>
-
-
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-
-
-
-
-
-            
-            <div class="grid-item">Feedback</div>
+            <div class="grid-item" id="feedback">Feedback</div>
         </div>
     </div>
 
@@ -629,162 +130,9 @@
         </div>
       
     </div>
-
-    <script>
-        document.getElementById("search_bar").addEventListener("click", function() {
-    const mcontainer = document.getElementById('main-container');
-    const ncontainer = document.getElementById('new-container');
-
-    mcontainer.classList.add('hidden');
-    setTimeout(function() {
-        mcontainer.style.display = 'none';
-        ncontainer.style.display = 'block';
-        setTimeout(function() {
-            ncontainer.classList.add('visible');
-        }, 150);
-        
-    }, 200);
-});
-
-document.getElementById("dash").addEventListener("click", function() {
-    const mcontainer = document.getElementById('main-container');
-    const ncontainer = document.getElementById('new-container');
-
-    ncontainer.classList.remove('visible');
-    setTimeout(function() {
-        ncontainer.style.display = 'none';
-        mcontainer.style.display = 'block';
-        setTimeout(function() {
-            mcontainer.classList.remove('hidden');
-        }, 150); // Allow reflow before applying transition
-    }, 200);
-});
-
-
-
-
-
-        //     // const mcontainer = document.getElementById('main-container');
-        //     // mcontainer.style.visibility = mcontainer.style.visibility === 'hidden' ? 'vsisble' : 'hidden';
-
-        //     const ncontainer = document.getElementById('new-container');
-        //     ncontainer.style.visibility = ncontainer.style.visibility === 'hidden' ? 'vsisble' : 'hidden';
-
-        //     setTimeout(function(){
-        //         const mcontainer = document.getElementById('main-container');
-        //         mcontainer.style.visibility = mcontainer.style.visibility === 'hidden' ? 'vsisble' : 'hidden';
-        //         mcontainer.style.transform = `translateZ(20}px)`;
-        //     },4000)
-
-        // });
-
-        
-
-        
-
-        
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Card stack logic
-            const cards = document.querySelectorAll('.card');
-            let currentIndex = 0;
-
-            function showNextCard() {
-                cards.forEach((card, index) => {
-                    if (index === currentIndex) {
-                        card.style.transform = `translateZ(${index * -20}px)`;
-                        card.style.opacity = 1;
-                    } else {
-                        card.style.transform = `translateZ(${(index - currentIndex) * -20}px)`;
-                        card.style.opacity = 0;
-                    }
-                });
-
-                currentIndex = (currentIndex + 1) % cards.length;
-            }
-
-            // Show next card every 3 seconds
-            setInterval(showNextCard, 3000);
-
-            // Initial setup
-            showNextCard();
-
-            // Advertisement logic
-            const advertisements = document.querySelectorAll('.advertisement');
-            let currentAdIndex = 0;
-
-            function showNextAdvertisement() {
-                advertisements.forEach((ad, index) => {
-                    if (index === currentAdIndex) {
-                        ad.classList.add('active');
-                    } else {
-                        ad.classList.remove('active');
-                    }
-                });
-
-                currentAdIndex = (currentAdIndex + 1) % advertisements.length;
-            }
-
-            // Show next advertisement every 5 seconds
-            setInterval(showNextAdvertisement, 3000);
-
-            // Initial setup
-            showNextAdvertisement();
-        });
-    //     document.addEventListener('DOMContentLoaded', () => {
-    //   const searchBar = document.querySelector('.search-bar');
-    //   const buttonsContainer = document.querySelector('.buttons-container');
-    //   const filterButton = document.querySelector('.filter-button');
-    //   const filterModal = document.getElementById('filterModal');
-    //   const closeModal = document.getElementsByClassName('close')[0];
-
-    //   searchBar.addEventListener('focus', () => {
-    //     buttonsContainer.style.display = 'flex';
-    //     document.querySelector('.container').style.transform = 'translateY(-15%)';
-    //   });
-
-    //   searchBar.addEventListener('blur', () => {
-    //     setTimeout(() => {
-    //       buttonsContainer.style.display = 'none';
-    //       document.querySelector('.search-container').style.transform = 'translateY(0)';
-    //     }, 200); // Delay to allow click event on suggestions
-    //   });
-
-    //   filterButton.addEventListener('click', () => {
-    //     filterModal.style.display = 'vi';
-    //   });
-
-    //   closeModal.onclick = function() {
-    //     filterModal.style.display = 'none';
-    //   }
-
-    //   window.onclick = function(event) {
-    //     if (event.target == filterModal) {
-    //       filterModal.style.display = 'none';
-    //     }
-    //   }
-    // });
-
-    // function applyFilters() {
-    //   const author = document.getElementById('author').value;
-    //   const genre = document.getElementById('genre').value;
-    //   const year = document.getElementById('year').value;
-    //   const rating = document.getElementById('rating').value;
-
-    //   // Logic to filter books from database based on the filters
-    //   // For now, we'll just log the filters to the console
-    //   console.log(`Filtering books by:
-    //     Author: ${author},
-    //     Genre: ${genre},
-    //     Published Year: ${year},
-    //     Rating: ${rating}`);
-      
-    //   // Close the modal after applying filters
-    //   document.getElementById('filterModal').style.display = 'none';
-    // }
-    </script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../static/js/script_dashboard.js"></script>
 </body>
 </html>
