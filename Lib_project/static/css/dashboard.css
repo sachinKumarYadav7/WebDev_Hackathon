@@ -351,6 +351,17 @@ display: flex;
 justify-content: center;
 }
 
+.rs{
+display: flex;
+justify-content: center;
+}
+
+.allbooks{
+display: flex;
+justify-content: center;
+}
+
+
 #inputState{
 font-size: 16px;
 border: none;
@@ -363,4 +374,62 @@ transition: background-color 0.3s;
 
 body, .navbar, #search_bar , .card ,#grid {
   transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+
+
+.carda {
+  /* width: calc(33.33% - 20px); 
+  margin-bottom: 20px;
+  margin-right: 20px;  */
+  text-align: center;
+}
+
+.carda:nth-child(3n) {
+  margin-right: 0; /* Remove right margin for every third card to ensure three cards per row */
+}
+
+@media (max-width: 767px) {
+  .carda {
+      width: calc(50% - 20px); /* Adjusted width for smaller screens */
+  }
+
+  .carda:nth-child(2n) {
+      margin-right: 0; /* Remove right margin for every second card on smaller screens */
+  }
+}
+
+.col-md-4{
+  display: flex;
+  justify-content: center;
+}
+
+.col-md-4 {
+  /* background-color: #ffffff; */
+  position: relative;
+  height: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.col-md-4:hover {
+  transform: translateY(-5px);
+}
+
+.carda {
+  margin: 20px 10px;
+  width: 80%;
+  height: 200px; /* Set fixed height */
+  overflow: hidden; /* Hide overflow content */
+}
+.carda .card-body {
+  overflow: hidden; /* Ensure content within card is contained */
+}
+.card-title, .card-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

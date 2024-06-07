@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Library Management Dashboard</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #6a1b9a;
+        }
+        .navbar-brand img {
+            height: 40px;
+        }
+        .navbar-nav .nav-link {
+            color: #fff !important;
+        }
+        .card {
+            margin: 20px 0;
+        }
+        .nav-link.active {
+            background-color: #8e24aa;
+        }
+        .view-more {
+            text-align: right;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <a class="navbar-brand" href="#">
+            <img src="../static/images/iitdh.png" alt="Institute Logo"> <!-- Replace with your logo path -->
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" onclick="showSection('dashboard')">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('manageBooks')">Manage Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('requestedBooks')">Requested Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('announcements')">Announcements</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-4">
+                <div id="dashboard" class="section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Dashboard</h1>
+                    </div>
+
+                    <!-- Analytics Cards -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Books Borrowed by Students</h5>
+                                    <canvas id="borrowedBooksChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Books Past Return Date</h5>
+                                    <canvas id="overdueBooksChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Updated Analytics Cards -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Books Out of Stock</h5>
+                                    <ul id="outOfStockBooksList" class="list-group">
+                                        <!-- List of out of stock books will be dynamically inserted here -->
+                                    </ul>
+                                    <div class="view-more">
+                                        <a href="outOfStockBooks.html">View More</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Books About to Get Out of Stock</h5>
+                                    <canvas id="aboutToGetOutOfStockBooksChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Popularity by Genre</h5>
+                                    <canvas id="genreBooksChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Books Returned</h5>
+                                    <canvas id="borrowedReturnedChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="manageBooks" class="section" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Manage Books</h5>
+                            <form id="manageBooksForm">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="bookTitle">Book Title</label>
+                                        <input type="text" class="form-control" id="bookTitle" placeholder="Enter book title">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="bookAuthor">Book Author</label>
+                                        <input type="text" class="form-control" id="bookAuthor" placeholder="Enter book author">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add Book</button>
+                                <button type="button" class="btn btn-danger" onclick="removeBook()">Remove Book</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="requestedBooks" class="section" style="display: none;">
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Requested Books</h5>
+                            <ul id="requestedBooksList" class="list-group">
+                                <li class="list-group-item">The Great Gatsby by F. Scott Fitzgerald</li>
+                                <li class="list-group-item">1984 by George Orwell</li>
+                                <li class="list-group-item">To Kill a Mockingbird by Harper Lee</li>
+                                <li class="list-group-item">The Catcher in the Rye by J.D. Salinger</li>
+                                <li class="list-group-item">Moby-Dick by Herman Melville</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div id="announcements" class="section" style="display: none;">
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Announcements</h5>
+                            <form id="announcementForm">
+                                <div class="form-group">
+                                    <label for="announcementText">Announcement</label>
+                                    <textarea class="form-control" id="announcementText" rows="3" placeholder="Write your announcement here"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Post Announcement</button>
+                            </form>
+                            <ul id="announcementList" class="list-group mt-4">
+                                <!-- List of announcements will be dynamically inserted here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Show specific section based on navigation click
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add('active');
+        }
+
+        // Sample data for charts
+        const borrowedBooksData = [40, 10, 30, 20, 7];
+        const overdueBooksData = [5, 39, 55, 10, 14];
+        const aboutToGetOutOfStockBooksData = [1, 1, 2, 3, 3];
+        const genreBooksData = [30, 20, 25, 15, 10];
+        const borrowedReturnedData = [5, 20, 5, 55, 20]; // Monthly returned data from Jan to May
+
+        // Sample data for out of stock books
+        const outOfStockBooks = [
+            'Book1', 'Book2', 'Book3', 'Book4', 'Book5',
+            'Book6', 'Book7', 'Book8', 'Book9', 'Book10'
+        ];
+
+        // Initialize out of stock books list
+        function initOutOfStockBooks() {
+            const list = document.getElementById('outOfStockBooksList');
+            list.innerHTML = '';
+            outOfStockBooks.slice(0, 5).forEach(book => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+                li.textContent = book;
+                list.appendChild(li);
+            });
+        }
+
+        // Initialize the charts
+        document.addEventListener('DOMContentLoaded', function () {
+            initOutOfStockBooks();
+
+            new Chart(document.getElementById('borrowedBooksChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May'],
+                    datasets: [{
+                        label: 'Books Borrowed',
+                        data: borrowedBooksData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('overdueBooksChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May'],
+                    datasets: [{
+                        label: 'Books Overdue',
+                        data: overdueBooksData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('aboutToGetOutOfStockBooksChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Book1', 'Book2', 'Book3', 'Book4', 'Book5'],
+                    datasets: [{
+                        label: 'Books About to Get Out of Stock',
+                        data: aboutToGetOutOfStockBooksData,
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1,
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('genreBooksChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['AI/ML', 'Electrical', 'Computer Science', 'Mechanical', 'Programming'],
+                    datasets: [{
+                        label: 'Books Borrowed by Genre',
+                        data: genreBooksData,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+            new Chart(document.getElementById('borrowedReturnedChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May'],
+                    datasets: [{
+                        label: 'Books Returned',
+                        data: borrowedReturnedData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

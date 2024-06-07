@@ -6,24 +6,54 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Responsive Dashboard</title>
     <link rel="stylesheet" type="text/css" href="../static/css/dashboard.css">
-
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #6a1b9a;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand img {
+            height: 40px;
+        }
+        .navbar-nav .nav-link {
+            color: #fff !important;
+        }
+        .nav-link.active {
+            background-color: #8e24aa;
+        }
+        .view-more {
+            text-align: right;
+            margin-top: 10px;
+        }
+        .navbar-text {
+            padding: 12px;
+        }
+    </style>
 </head>
 <body>
-    <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav id="navbar" class="navbar navbar-expand-lg navbar-dark sticky-top">
         <a class="navbar-brand" href="#">
-            <img src="../static/images/iitdh.png" width="30" height="30" alt="IITDH Logo">
+            <img src="../static/images/iitdh.png" alt="Institute Logo">
         </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#" id="dash">Dashboard <span class="sr-only">(current)</span></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item ">
+                    <a class="nav-link active" id="dash" href="#" >Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="#" id="search_bar" >Explore Books</a>
                 </li>
             </ul>
             {% if session.logged_in %}
             <ul class="navbar-nav ml-auto">
                 <li>
                     <a class="navbar-brand" href="#" id="mode">
-                        <img src="../static/images/moon.png" width="30" height="30" alt="Mode Toggle" id="imgmode">
+                        <img src="../static/images/moon.png" alt="Mode Toggle" id="imgmode">
                     </a>
                 </li>
                 <li class="nav-item">
@@ -32,36 +62,35 @@
                     </span>
                 </li>
                 <form class="form-inline my-2 ml-2 my-lg-0">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" href="">Logout</button>
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                 </form>
             </ul>
             {% endif %}
         </div>
     </nav>
-    <div class="search-container">
-        <input type="text" id="search_bar" class="search-bar" placeholder="Search for Books">
-    </div>
-
+    
     <div class="container" id="main-container">
-        
-        <div class="grid-container" >
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Dashboard</h1>
+        </div>
+        <div class="grid-container">
             <div class="grid-item card-stack-demo" id="grid">
                 <div class="card-stack" id="cards">
-                    <div class="card" id="card" >
+                    <div class="card" id="card1">
                         <div class="card-content">
                             <h2>Reminder</h2>
                             <p>Till 22nd of June</p>
                             <p>We hope you remember to return, <span class="highlight">R D Sharma</span>. Please return it before the deadline.</p>
                         </div>
                     </div>
-                    <div class="card" id="card">
+                    <div class="card" id="card2">
                         <div class="card-content">
                             <h2>Reminder</h2>
                             <p>Of 23rd June</p>
                             <p>We hope you remember to return, <span class="highlight">Power Electronics</span>. Please return it before the deadline.</p>
                         </div>
                     </div>
-                    <div class="card" id="card">
+                    <div class="card" id="card3">
                         <div class="card-content">
                             <h2>Reminder</h2>
                             <p>Return Book Today</p>
@@ -71,27 +100,22 @@
                 </div>
             </div>
             <div class="grid-item advertisement-board" id="ad">
-                <div class="advertisements" >
+                <div class="advertisements">
                     <div class="advertisement">You were looking for a Book in AI/ML, here are some</div>
                     <div class="advertisement">Other guys from your branch took this book, have a look</div>
                     <div class="advertisement">See what other guys are studying of your same interest</div>
                 </div>
             </div>
-            <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-                Launch demo modal
-            </button> -->
-    
-        
             <div class="grid-item" id="feedback">Feedback</div>
         </div>
     </div>
 
-    <div  id="new-container">
-        
-        
+    <div id="new-container" style="display:none;">
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search for Books">
+        </div>
         <div class="form-row">
             <div class="form-group col-md-3">
-                <!-- <label for="inputState">Genre</label> -->
                 <select id="inputState" class="form-control">
                   <option selected>Genre</option>
                   <option>Maths</option>
@@ -100,19 +124,16 @@
                 </select>
             </div>
             <div class="form-group col-md-3">
-                <!-- <label for="inputState">Course</label> -->
                 <select id="inputState" class="form-control">
                   <option selected>Course</option>
-                  <option >Data Structures ans Algorithms</option>
+                  <option >Data Structures and Algorithms</option>
                   <option >Signal Systems</option>
                   <option >Statistics</option>
                   <option >Artificial Intelligence</option>
                   <option >Computer Architecture</option>
-                  
                 </select>
             </div>
             <div class="form-group col-md-3">
-              <!-- <label for="inputState">Rating</label> -->
               <select id="inputState" class="form-control">
                 <option selected>Rating</option>
                 <option>1</option>
@@ -122,15 +143,60 @@
                 <option>5</option>
               </select>
             </div>
+        </div>
+        <div class="recent_searches">
+            <h3>Recent Searches</h3>
             
         </div>
 
-        <div class="recent_searches">
-            <h3>Recent Searches</h3>
+        <div class="allbooks">
+            <h3>A Realm of Books</h3>
         </div>
-      
+        
+        <div class="row" id="books-container">
+            <!-- Cards will be inserted here by JavaScript -->
+        </div>
     </div>
+    
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.get('/books', function(data) {
+                const booksContainer = $('#books-container');
+                if (data.length === 0) {
+                    booksContainer.append('<p>No books available.</p>');
+                } else {
+                    data.forEach(function(book) {
+                        const truncatedtitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
+                        const truncatedDesc = book.desc ? (book.desc.length > 100 ? book.desc.substring(0, 100) + '...' : book.desc) : 'No description available';
+                        const card = `
+                            <div class="col-md-4">
+                                <div class="carda">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${truncatedtitle}</h5>
+                                        <p class="card-text">Author: ${book.publisher}</p>
+                                        <p class="card-text">Description: ${truncatedDesc}</p>
+                                        <a href="#" class="btn btn-primary">Issue</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        booksContainer.append(card);
+                    });
+                }
+            });
+
+            $('#search_bar').click(function() {
+                $('#main-container').hide();
+                $('#new-container').show();
+            });
+
+            $('#dash').click(function() {
+                $('#new-container').hide();
+                $('#main-container').show();
+            });
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="../static/js/script_dashboard.js"></script>

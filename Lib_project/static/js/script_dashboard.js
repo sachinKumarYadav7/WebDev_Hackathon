@@ -2,6 +2,11 @@ document.getElementById("search_bar").addEventListener("click", function() {
   const mcontainer = document.getElementById('main-container');
   const ncontainer = document.getElementById('new-container');
 
+  document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    document.querySelector(`#search_bar`).classList.add('active');
+
   mcontainer.classList.add('hidden');
   setTimeout(function() {
       mcontainer.style.display = 'none';
@@ -10,12 +15,17 @@ document.getElementById("search_bar").addEventListener("click", function() {
           ncontainer.classList.add('visible');
       }, 150);
       
-  }, 200);
+  }, 100);
 });
 
 document.getElementById("dash").addEventListener("click", function() {
   const mcontainer = document.getElementById('main-container');
   const ncontainer = document.getElementById('new-container');
+
+  document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    document.querySelector(`#dash`).classList.add('active');
 
   ncontainer.classList.remove('visible');
   setTimeout(function() {
@@ -24,7 +34,7 @@ document.getElementById("dash").addEventListener("click", function() {
       setTimeout(function() {
           mcontainer.classList.remove('hidden');
       }, 150); // Allow reflow before applying transition
-  }, 200);
+  }, 100);
 });
 
 
