@@ -1,6 +1,11 @@
 from flask import Flask, render_template, session, redirect, request, jsonify,url_for
 from functools import wraps
 from pymongo import MongoClient
+from flask import Flask, request, jsonify
+# from flask_pymongo import PyMongo
+from bson.json_util import dumps
+from bson.objectid import ObjectId
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Add a secret key for session management
@@ -12,7 +17,10 @@ db = client.admin  # replace 'login_user' with your database name
 users_collection = db.user_login  # replace 'users' with your collection name
 
 allb = client.all_books  # replace 'login_user' with your database name
-b = allb.books  # replace 'users' with your collection name
+b = allb.books2  # replace 'users' with your collection name
+
+announce = client.admin
+announcements = announce.announcements
 
 def login_required(f):
     @wraps(f)
@@ -53,9 +61,6 @@ def admin_home():
         user_name = None
     return render_template('admin_dash.html', user_name=user_name)
 
-@app.route('/login')
-def search():
-    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
@@ -75,6 +80,25 @@ def get_books():
         book['_id'] = str(book['_id'])  # Convert ObjectId to string for JSON serialization
     
     return jsonify(books)
+
+
+@app.route('/announcements', methods=['POST'])
+def add_announcement():
+    data = request.get_json()
+    if not data or not 'announcement' in data:
+        return jsonify({"error": "Invalid data"}), 400
+
+    announcement = {
+        "announcement": data['announcement'],
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    announcement_id = announce.announcements.insert_one(announcement).inserted_id
+    return jsonify({"message": "Announcement added", "id": str(announcement_id)}), 201
+
+@app.route('/announcements', methods=['GET'])
+def get_announcements():
+    announcements = announce.announcements.find().sort("timestamp", -1)
+    return dumps(announcements), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

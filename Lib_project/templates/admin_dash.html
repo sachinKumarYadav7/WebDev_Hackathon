@@ -174,7 +174,7 @@
                             <h5 class="card-title">Announcements</h5>
                             <form id="announcementForm">
                                 <div class="form-group">
-                                    <label for="announcementText">Announcement</label>
+                                    <label for="announcementText">Write Announcement</label>
                                     <textarea class="form-control" id="announcementText" rows="3" placeholder="Write your announcement here"></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Post Announcement</button>
@@ -354,6 +354,53 @@
                 }
             });
         });
+
+        document.getElementById('announcementForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const announcementText = document.getElementById('announcementText').value;
+
+            fetch('http://127.0.0.1:5000/announcements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ announcement: announcementText }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                loadAnnouncements();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+ 
+        function loadAnnouncements() {
+            fetch('http://127.0.0.1:5000/announcements')
+                .then(response => response.json())
+                .then(data => {
+                    const announcementList = document.getElementById('announcementList');
+                    announcementList.innerHTML = '';
+                    data.forEach(announcement => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item';
+                 
+                        const utcDate = new Date(announcement.timestamp);
+                        const istDate = new Date(utcDate.getTime() + (330 * 60000)); 
+                        const formattedDate = istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+                        li.textContent = `${announcement.announcement} (Posted on: ${formattedDate})`;
+                        announcementList.appendChild(li);
+                    });
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAnnouncements();
+        });
+
     </script>
 </body>
 </html>

@@ -30,6 +30,15 @@
         .navbar-text {
             padding: 12px;
         }
+        #announcement {
+            width: 100%;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -40,9 +49,11 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
+        
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item ">
+                <li class="nav-item " id="bell">
                     <a class="nav-link active" id="dash" href="#" >Dashboard</a>
                 </li>
                 <li class="nav-item">
@@ -73,6 +84,16 @@
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h1 class="h2">Dashboard</h1>
         </div>
+
+        
+            <div class="announcement" id="announcement">
+                <h5>Announcements</h5>
+                <ul id="announcementList" class="list-group mt-4">
+                    <!-- List of announcements will be dynamically inserted here -->
+                </ul>
+            </div>
+      
+        
         <div class="grid-container">
             <div class="grid-item card-stack-demo" id="grid">
                 <div class="card-stack" id="cards">
@@ -107,7 +128,9 @@
                 </div>
             </div>
             <div class="grid-item" id="feedback">Feedback</div>
+            
         </div>
+        
     </div>
 
     <div id="new-container" style="display:none;">
@@ -145,7 +168,7 @@
             </div>
         </div>
         <div class="recent_searches">
-            <h3>Recent Searches</h3>
+            <!-- <h3>Recent Searches</h3> -->
             
         </div>
 
@@ -154,9 +177,12 @@
         </div>
         
         <div class="row" id="books-container">
-            <!-- Cards will be inserted here by JavaScript -->
+            <!-- Cards will be inserted here -->
         </div>
     </div>
+
+
+
     
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
@@ -168,7 +194,7 @@
                 } else {
                     data.forEach(function(book) {
                         const truncatedtitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
-                        const truncatedDesc = book.desc ? (book.desc.length > 100 ? book.desc.substring(0, 100) + '...' : book.desc) : 'No description available';
+                        const truncatedDesc = book.description ? (book.description.length > 100 ? book.description.substring(0, 100) + '...' : book.description) : 'No description available';
                         const card = `
                             <div class="col-md-4">
                                 <div class="carda">
@@ -176,6 +202,7 @@
                                         <h5 class="card-title">${truncatedtitle}</h5>
                                         <p class="card-text">Author: ${book.publisher}</p>
                                         <p class="card-text">Description: ${truncatedDesc}</p>
+                                        <p class="card-text">Count: ${book.count}</p>
                                         <a href="#" class="btn btn-primary">Issue</a>
                                     </div>
                                 </div>
@@ -195,6 +222,36 @@
                 $('#new-container').hide();
                 $('#main-container').show();
             });
+        });
+
+        function loadAnnouncements() {
+            fetch('http://127.0.0.1:5000/announcements')
+                .then(response => response.json())
+                .then(data => {
+                    if(data.length == 0){
+                        announcementList.textContent = "No announcements available.";
+                    }
+                    else{
+
+                        const announcementList = document.getElementById('announcementList');
+                        announcementList.innerHTML = '';
+                        data.forEach(announcement => {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item';
+                            
+                            const utcDate = new Date(announcement.timestamp);
+                            const istDate = new Date(utcDate.getTime() + (330 * 60000)); 
+                            const formattedDate = istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    
+                            li.textContent = `${announcement.announcement} (Posted on: ${formattedDate})`;
+                            announcementList.appendChild(li);
+                        });
+                    }
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAnnouncements();
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>

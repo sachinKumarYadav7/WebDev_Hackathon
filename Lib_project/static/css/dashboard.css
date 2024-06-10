@@ -422,7 +422,7 @@ body, .navbar, #search_bar , .card ,#grid {
 .carda {
   margin: 20px 10px;
   width: 80%;
-  height: 200px; /* Set fixed height */
+  height: 215px; /* Set fixed height */
   overflow: hidden; /* Hide overflow content */
 }
 .carda .card-body {
@@ -432,4 +432,8 @@ body, .navbar, #search_bar , .card ,#grid {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.announcement{
+  width: 100%;
 }
