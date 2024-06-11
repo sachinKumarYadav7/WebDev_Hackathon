@@ -22,6 +22,9 @@ b = allb.books2  # replace 'users' with your collection name
 announce = client.admin
 announcements = announce.announcements
 
+issue = client.admin
+# announcements = issue.announcements
+
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -99,6 +102,28 @@ def add_announcement():
 def get_announcements():
     announcements = announce.announcements.find().sort("timestamp", -1)
     return dumps(announcements), 200
+
+@app.route('/issue_req' , methods=['POST'])
+def add_issue_req():
+    data = request.get_json()
+    user = session.get('user')
+
+    issue_request = {
+        "Name" : user.get('name'),
+        "email" : user.get('email'),
+        "bookname" : data['bookname'],
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+    issue_request_id = issue.issue_request.insert_one(issue_request).inserted_id
+    return jsonify({"message": "issue req added", "id": str(issue_request_id)}), 201
+
+@app.route('/loadissuereqs', methods=['GET'])
+def get_requests():
+    user = session.get('user')
+    email = user.get('email')
+    issue_requests = issue.issue_request.find({"email": email}).sort("timestamp", -1)
+    return dumps(issue_requests), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

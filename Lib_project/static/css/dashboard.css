@@ -31,7 +31,7 @@ body {
 }
 
 .navbar {
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 
 .search-bar {
@@ -144,13 +144,17 @@ transform: translateY(-5px);
     height: 100%;
   }
 
+  .announcement{
+    margin-top: 10px;
+  }
+
 }
 
 /* Modal styling */
 .modal {
   display: none;
   position: fixed;
-  z-index: 1;
+  /* z-index: 1; */
   left: 0;
   top: 0;
   width: 100%;
@@ -212,30 +216,8 @@ transition: background-color 0.3s;
 background-color: #0056b3;
 }
 
-.modal {
-display: none;
-position: fixed;
-z-index: 1;
-left: 0;
-top: 0;
-width: 100%;
-height: 1009x;
-overflow: auto;
-background-color: rgba(0,0,0,0.4);
-padding-top: 60px;
-}
 
-.modal-content {
-background-color: #fff;
-margin: 5% auto;
-padding: 20px;
-border: 1px solid #888;
-width: 80%;
-max-width: 500px;
-border-radius: 10px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-animation: fadeIn 0.3s ease;
-}
+
 
 .close {
 color: #aaa;
@@ -386,16 +368,16 @@ body, .navbar, #search_bar , .card ,#grid {
 }
 
 .carda:nth-child(3n) {
-  margin-right: 0; /* Remove right margin for every third card to ensure three cards per row */
+  margin-right: 0; 
 }
 
 @media (max-width: 767px) {
   .carda {
-      width: calc(50% - 20px); /* Adjusted width for smaller screens */
+      width: calc(50% - 20px); 
   }
 
   .carda:nth-child(2n) {
-      margin-right: 0; /* Remove right margin for every second card on smaller screens */
+      margin-right: 0; 
   }
 }
 
@@ -436,4 +418,12 @@ body, .navbar, #search_bar , .card ,#grid {
 
 .announcement{
   width: 100%;
+}
+
+#issuelist {
+  max-height: 200px; 
+  overflow-y: auto;  
+  overflow-x: hidden; 
+  border: 1px solid #ddd; 
+  padding: 0px; 
 }
