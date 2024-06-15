@@ -28,6 +28,43 @@
             text-align: right;
             margin-top: 10px;
         }
+        .req {
+            flex: 1;      
+            padding-right: 10px;
+            width: 70%;
+        }
+        #but {
+            width: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .list-group2 {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr); /* 3 columns */
+            gap: 10px; /* Optional: space between items */
+        }
+        @media (max-width: 767px) {
+            .d-flex {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .req {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            #but {
+                /* width: 60%; */
+                margin-bottom: 5px;
+                gap: 10px;
+                flex-direction: row;
+                align-items: flex-start;
+            }
+            #but button {
+                width: 60%;
+            }
+            }
     </style>
 </head>
 <body>
@@ -64,6 +101,53 @@
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2">Dashboard</h1>
                     </div>
+
+                   
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Issued Books</h5>
+                                <ul id="requestedBoomksList" class="list-group">
+                                    <div class="d-flex flex-wrap ">
+                                        <div class="acc">
+                                            <ul id="accstudents" class="list-group2">
+                                                <!-- List of requested books will be dynamically inserted here -->
+                                            </ul>
+                                        </div>                                        
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Books Past Return Date</h5>
+                                <ul id="requestedBoomksList" class="list-group">
+                                    <div class="d-flex flex-wrap ">
+                                        <div class="acc">
+                                            <ul id="accstudents" class="list-group2">
+                                                <!-- List of requested books will be dynamically inserted here -->
+                                            </ul>
+                                        </div>                                        
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Books Near Return Date</h5>
+                                <ul id="requestedBoomksList" class="list-group">
+                                    <div class="d-flex flex-wrap ">
+                                        <div class="acc">
+                                            <ul id="accstudents" class="list-group2">
+                                                <!-- List of requested books will be dynamically inserted here -->
+                                            </ul>
+                                        </div>                                        
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>
+                    
 
                     <!-- Analytics Cards -->
                     <div class="row">
@@ -157,11 +241,20 @@
                         <div class="card-body">
                             <h5 class="card-title">Requested Books</h5>
                             <ul id="requestedBooksList" class="list-group">
-                                <li class="list-group-item">The Great Gatsby by F. Scott Fitzgerald</li>
-                                <li class="list-group-item">1984 by George Orwell</li>
-                                <li class="list-group-item">To Kill a Mockingbird by Harper Lee</li>
-                                <li class="list-group-item">The Catcher in the Rye by J.D. Salinger</li>
-                                <li class="list-group-item">Moby-Dick by Herman Melville</li>
+                                <div class="d-flex flex-wrap ">
+                                    <div class="req">
+                                        <ul id="requestedBooksList" class="list-group">
+                                            <!-- List of requested books will be dynamically inserted here -->
+                                        </ul>
+                                        <!-- <li class="list-group-item">The Great Gatsby by F. Scott Fitzgerald</li> -->
+                                    </div>
+                                    <!-- <div id="but" class="align-self-center">
+                                        <button type="button" class="btn btn-success">Accept</button>
+                                        <button type="button" class="btn btn-danger">Delete</button>
+                                    </div> -->
+                                    
+                                </div>
+                                
                             </ul>
                         </div>
                     </div>
@@ -401,6 +494,123 @@
             loadAnnouncements();
         });
 
+
+        function loadAllIssueReqs() {
+            fetch('http://127.0.0.1:5000/loadallissuereqs')
+                .then(response => response.json())
+                .then(data => {
+                    const requestList = document.getElementById('requestedBooksList');
+                    requestList.innerHTML = ''; 
+
+                    if(data.length === 0) {
+                        const noRequestMessage = document.createElement('li');
+                        noRequestMessage.className = 'list-group-item';
+                        noRequestMessage.textContent = 'No issue requests.';
+                        requestList.appendChild(noRequestMessage);
+                    } else {
+                        data.forEach(req => {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'list-group-item d-flex justify-content-between align-items-left';
+
+                            const requestInfo = document.createElement('div');
+                            const utcDate = new Date(req.timestamp);
+                            const istDate = new Date(utcDate.getTime() + (330 * 60000)); 
+                            const formattedDate = istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+                            requestInfo.innerHTML = `<strong>Name:</strong> ${req.Name} <br><strong>Email:</strong> ${req.email} <br><strong>Book Requested:</strong> ${req.bookname} <br><em>(${formattedDate})</em>`;
+
+                            const buttonGroup = document.createElement('div');
+                            buttonGroup.className = 'btn-group';
+                            
+                            const acceptButton = document.createElement('button');
+                            acceptButton.className = 'btn btn-success';
+                            acceptButton.textContent = 'Accept';
+                            acceptButton.onclick = () => {
+            
+                                fetch('http://127.0.0.1:5000/accepted', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({ req }),
+                                })
+                                
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log('Success:', data);
+                                    loadallaccreqs();
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+                                loadallaccreqs();
+                            }
+
+                            const deleteButton = document.createElement('button');
+                            deleteButton.className = 'btn btn-danger';
+                            deleteButton.textContent = 'Delete';
+                            deleteButton.onclick = () => handleRequest(req.id, 'delete');
+
+                            buttonGroup.appendChild(acceptButton);
+                            buttonGroup.appendChild(deleteButton);
+
+                            listItem.appendChild(requestInfo);
+                            listItem.appendChild(buttonGroup);
+
+                            requestList.appendChild(listItem);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching issue requests:', error));
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAllIssueReqs();
+        });
+
+
+        function loadallaccreqs() {
+            fetch('http://127.0.0.1:5000/loadaccbooks')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Data received from server:", data);  // Debugging line
+                    const requestList = document.getElementById('accstudents');
+                    requestList.innerHTML = ''; 
+
+                    if (data.length === 0) {
+                        const noRequestMessage = document.createElement('li');
+                        noRequestMessage.className = 'list-group-item';
+                        noRequestMessage.textContent = 'No issue accepted.';
+                        requestList.appendChild(noRequestMessage);
+                    } else {
+                        data.forEach(req => {
+                            console.log("Request object:", req);  // Debugging line
+                            const listItem = document.createElement('li');
+                            listItem.className = 'list-group-item d-flex justify-content-left align-items-left';
+
+                            const requestInfo = document.createElement('div');
+                            const utcDate = new Date(req.timestamp);
+                            const istDate = new Date(utcDate.getTime() + (330 * 60000)); 
+                            const formattedDate = istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+                            requestInfo.innerHTML = `<strong>Name:</strong> ${req.req.Name} | <strong>Email:</strong> ${req.req.email} |  <strong>Book Issued:</strong> ${req.req.bookname} | <strong>Issue Time: </strong> ${formattedDate}`;
+
+                            listItem.appendChild(requestInfo);
+                            requestList.appendChild(listItem);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching issue requests:', error));
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadallaccreqs();
+        });
+
+
     </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </body>
 </html>

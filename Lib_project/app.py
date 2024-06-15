@@ -23,6 +23,7 @@ announce = client.admin
 announcements = announce.announcements
 
 issue = client.admin
+acc = client.admin
 # announcements = issue.announcements
 
 def login_required(f):
@@ -124,6 +125,27 @@ def get_requests():
     email = user.get('email')
     issue_requests = issue.issue_request.find({"email": email}).sort("timestamp", -1)
     return dumps(issue_requests), 200
+
+@app.route('/loadallissuereqs', methods=['GET'])
+def get_all_requests():
+    issue_requests = issue.issue_request.find().sort("timestamp", -1)
+    return dumps(issue_requests), 200
+
+@app.route('/accepted' ,methods=['POST'])
+def add_to_accepted():
+    data = request.get_json()
+    acc_request = {
+        "req" : data['req'],
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    acc_request_id = acc.accepted.insert_one(acc_request).inserted_id
+    return jsonify({"message": "issue req added", "id": str(acc_request_id)}), 201
+
+@app.route('/loadaccbooks', methods=['GET'])
+def get_all_issued_books():
+    acc_requests = acc.accepted.find().sort("timestamp", +1)
+    return dumps(acc_requests), 200
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
