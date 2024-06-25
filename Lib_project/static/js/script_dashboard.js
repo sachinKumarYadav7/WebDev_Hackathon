@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       currentIndex = (currentIndex + 1) % cards.length;
+    //   console
   }
 
 

@@ -154,13 +154,19 @@ def add_to_accepted():
 def get_all_issued_books():
     acc_requests = acc.accepted.find().sort("timestamp", +1)
     return dumps(acc_requests), 200
+
+@app.route('/load_acc_by_user', methods=['GET'])
+def get_acc_by_user():
+    user = session.get('user')
+    email = user.get('email')
+    acc_by_user = acc.accepted.find({"req.email": email}).sort("req.timestamp", -1)
+    return dumps(acc_by_user), 200
     
 @app.route('/search' , methods = ['POST'])
 def search():
     data = request.get_json()
     query = data.get('query', '')
 
-    
     results = list(b.find({"title": {"$regex": query, "$options": "i"}}))
 
     for book in results:
@@ -168,6 +174,26 @@ def search():
 
 
     return jsonify(results)
+
+@app.route('/search_by_genre_and_dept', methods=['POST'])
+def searchbydeptngenre():
+    data = request.get_json()
+    dept = data.get('dept', '')
+    genre = data.get('genre', '')
+ 
+    query = {}
+    if genre :
+        query["genre"] = {"$regex": genre, "$options": "i"}
+    if dept:
+        query["department"] = {"$regex": dept, "$options": "i"}
+ 
+    results = list(b.find(query))
+    
+    for book in results:
+        book['_id'] = str(book['_id'])
+
+    return jsonify(results)
+
 
 
 if __name__ == '__main__':

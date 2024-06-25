@@ -49,6 +49,10 @@
             color: #666; 
             /* margin-left: 25%; */
         }
+        #searchButton{
+            height: 40px;
+            /* margin: 10px; */
+        }
 
     </style>
 </head>
@@ -103,28 +107,8 @@
         
         <div class="grid-container">
             <div class="grid-item card-stack-demo" id="grid">
-                <div class="card-stack" id="cards">
-                    <div class="card" id="card1">
-                        <div class="card-content">
-                            <h2>Reminder</h2>
-                            <p>Till 22nd of June</p>
-                            <p>We hope you remember to return, <span class="highlight">R D Sharma</span>. Please return it before the deadline.</p>
-                        </div>
-                    </div>
-                    <div class="card" id="card2">
-                        <div class="card-content">
-                            <h2>Reminder</h2>
-                            <p>Of 23rd June</p>
-                            <p>We hope you remember to return, <span class="highlight">Power Electronics</span>. Please return it before the deadline.</p>
-                        </div>
-                    </div>
-                    <div class="card" id="card3">
-                        <div class="card-content">
-                            <h2>Reminder</h2>
-                            <p>Return Book Today</p>
-                            <p>We hope you remember to return, <span class="highlight">Fight Club</span>. Please return it before the deadline.</p>
-                        </div>
-                    </div>
+                <div class="card-stack" id="rem">
+                        <!-- List of announcements will be dynamically inserted here -->
                 </div>
             </div>
             <div class="grid-item advertisement-board" id="ad">
@@ -157,24 +141,30 @@
             <input type="text" class="search-bar" placeholder="Search for Books" id="searchbar">
         </div>
         <div class="form-row">
-            <div class="form-group col-md-3">
-                <select id="inputState" class="form-control">
-                  <option selected>Genre</option>
-                  <option>Maths</option>
-                  <option>Physics</option>
-                  <option>Chemistry</option>
-                </select>
+            <!-- <div class="sort"> -->
+                <div class="form-group col-md-3">
+                    <select id="Genre" class="form-control">
+                      <option selected>Genre</option>
+                      <option>Power Systems</option>
+                      <option>Physics</option>
+                      <option>Chemistry</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <select id="dept" class="form-control">
+                      <option >Department</option>
+                      <option >Electrical Engineering</option>
+                      <option >Signal Systems</option>
+                      <option >Statistics</option>
+                      <option >Artificial Intelligence</option>
+                      <option >Computer Architecture</option>
+                    </select>
+                </div>
+            <!-- </div> -->
+            <div>
+                <button id="searchButton" class="btn btn-primary">Search</button>
             </div>
-            <div class="form-group col-md-3">
-                <select id="inputState" class="form-control">
-                  <option selected>Department</option>
-                  <option >Data Structures and Algorithms</option>
-                  <option >Signal Systems</option>
-                  <option >Statistics</option>
-                  <option >Artificial Intelligence</option>
-                  <option >Computer Architecture</option>
-                </select>
-            </div>
+
             
         </div>
         <div class="recent_searches">
@@ -417,6 +407,160 @@
                     console.error('Error:', error);
                 });
             });
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var searchButton = document.getElementById("searchButton");
+            searchButton.addEventListener("click", function() {
+                var e_genre = document.getElementById("Genre");
+                var genre = e_genre.value;
+                var e_dept = document.getElementById("dept");
+                var dept = e_dept.value;
+
+                console.log("Genre: " + genre);
+                console.log("Department: " + dept);
+
+                var query = {
+                    genre: genre,
+                    dept: dept
+                };
+
+                fetch('/search_by_genre_and_dept', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(query),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const booksContainer = document.getElementById('books-container');
+                    booksContainer.innerHTML = '';
+                    if (data.length === 0) {
+                        const notfound = `<div class="notfound">
+                            <p>No matches for search : ${JSON.stringify(query)}</p>
+                        </div>`;
+                        booksContainer.insertAdjacentHTML('beforeend', notfound);
+                    } else {
+                        data.forEach(function(book) {
+                            const truncatedTitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
+                            const truncatedDesc = book.description ? (book.description.length > 100 ? book.description.substring(0, 100) + '...' : book.description) : 'No description available';
+                            const card = `
+                                <div class="col-md-4">
+                                    <div class="carda">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${truncatedTitle}</h5>
+                                            <p class="card-text">Author: ${book.author}</p>
+                                            <p class="card-text">Description: ${truncatedDesc}</p>
+                                            <p class="card-text">Count: ${book.count}</p>
+                                            <a href="#" class="btn btn-primary issue-btn" data-title="${book.title}">Issue</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            booksContainer.insertAdjacentHTML('beforeend', card);
+                        });
+                    }
+
+                    document.querySelectorAll('.issue-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const bookTitle = this.getAttribute('data-title');
+                            document.getElementById('modalContent').textContent = `Do you want to issue the book: ${bookTitle}?`;
+                            document.getElementById('issueModal').dataset.title = bookTitle;
+                            $('#issueModal').modal('show');
+                        });
+                    });
+
+                    document.getElementById('cissue').addEventListener('click', function() {
+                        const bookTitle2 = this.getAttribute('data-title');
+                        console.log(`${bookTitle2}`);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            });
+        }); 
+
+        
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let num_of_accbooks = 0;
+
+            function load_acc_by_user() {
+                fetch('http://127.0.0.1:5000/load_acc_by_user')
+                    .then(response => response.json())
+                    .then(data => {
+                        const rem = document.getElementById('rem');
+                        rem.innerHTML = '';
+                        if (data.length === 0) {
+                            const notfound = `<div class="notfound">
+                                                <p>You don't have any issued books!</p>
+                                            </div>`;
+                            rem.insertAdjacentHTML('beforeend', notfound);
+                        } else {
+                            num_of_accbooks = data.length;
+                            data.forEach(function(book) {
+                                const truncatedTitle = book.req.bookname ? 
+                                    (book.req.bookname.length > 40 ? book.req.bookname.substring(0, 40) + '...' : book.req.bookname) : 
+                                    'No title available';
+                                
+                                    const bookTimestamp = new Date(book.req.timestamp);
+                                    const now = new Date();
+
+                                    const bookDueDate = new Date(bookTimestamp.getTime() + 15 * 24 * 60 * 60 * 1000);
+
+                                    const timeDiff = Math.abs(bookDueDate - now);
+
+                                    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                                    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                                    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                                    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                                    const formattedDueDate = bookDueDate.toLocaleDateString('en-US', options);
+
+                                    const card = `
+                                        <div class="card">
+                                            <div class="card-content">
+                                                <h2>Reminder</h2> 
+                                                <strong>Book</strong>: ${truncatedTitle} <br> 
+                                                <strong>Deadline</strong>: ${formattedDueDate} <br>
+                                                <strong>Time remaining</strong>: ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds
+                                            </div>
+                                        </div>
+                                    `;
+                                    rem.insertAdjacentHTML('beforeend', card);
+                            });
+
+                            const cards = document.querySelectorAll('.card');
+                            let currentIndex = 0;
+
+                            function showNextCard() {
+                                cards.forEach((card, index) => {
+                                    if (index === currentIndex) {
+                                        card.style.transform = `translateZ(${index * -20}px)`;
+                                        card.style.opacity = 1;
+                                    } else {
+                                        card.style.transform = `translateZ(${(index - currentIndex) * -20}px)`;
+                                        card.style.opacity = 0;
+                                    }
+                                });
+
+                                currentIndex = (currentIndex + 1) % num_of_accbooks;
+                                console.log(num_of_accbooks);
+                            }
+
+                            setInterval(showNextCard, 3000);
+                            showNextCard();
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            }
+
+            load_acc_by_user();
         });
 
         
