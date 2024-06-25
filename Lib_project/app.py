@@ -131,6 +131,15 @@ def get_all_requests():
     issue_requests = issue.issue_request.find().sort("timestamp", -1)
     return dumps(issue_requests), 200
 
+@app.route('/delete/<entry_id>', methods=['POST'])
+def delete_entry(entry_id):
+    try:
+        issue.issue_request.delete_one({'_id':ObjectId(entry_id) })
+        return jsonify({'status': 'success', 'message': 'Entry deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+
 @app.route('/accepted' ,methods=['POST'])
 def add_to_accepted():
     data = request.get_json()
@@ -146,6 +155,20 @@ def get_all_issued_books():
     acc_requests = acc.accepted.find().sort("timestamp", +1)
     return dumps(acc_requests), 200
     
+@app.route('/search' , methods = ['POST'])
+def search():
+    data = request.get_json()
+    query = data.get('query', '')
+
+    
+    results = list(b.find({"title": {"$regex": query, "$options": "i"}}))
+
+    for book in results:
+        book['_id'] = str(book['_id'])
+
+
+    return jsonify(results)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

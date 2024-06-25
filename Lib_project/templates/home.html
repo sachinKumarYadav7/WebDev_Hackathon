@@ -39,6 +39,17 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 10px;
         }
+        .notfound {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%; 
+            text-align: center;
+            font-size: 1.5em;
+            color: #666; 
+            /* margin-left: 25%; */
+        }
+
     </style>
 </head>
 <body>
@@ -143,7 +154,7 @@
 
     <div id="new-container" style="display:none;">
         <div class="search-container">
-            <input type="text" class="search-bar" placeholder="Search for Books">
+            <input type="text" class="search-bar" placeholder="Search for Books" id="searchbar">
         </div>
         <div class="form-row">
             <div class="form-group col-md-3">
@@ -164,25 +175,13 @@
                   <option >Computer Architecture</option>
                 </select>
             </div>
-            <!-- <div class="form-group col-md-3">
-              <select id="inputState" class="form-control">
-                <option selected>Rating</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-              </select>
-            </div> -->
+            
         </div>
         <div class="recent_searches">
             <!-- <h3>Recent Searches</h3> -->
             
         </div>
 
-        <div class="allbooks">
-            <h3>A Realm of Books</h3>
-        </div>
         
         <div class="row" id="books-container">
             <!-- Cards will be inserted here -->
@@ -252,15 +251,7 @@
                 }
             });
 
-            $('#search_bar').click(function() {
-                $('#main-container').hide();
-                $('#new-container').show();
-            });
-
-            $('#dash').click(function() {
-                $('#new-container').hide();
-                $('#main-container').show();
-            });
+           
         });
 
 
@@ -364,8 +355,73 @@
         document.addEventListener('DOMContentLoaded', function () {
             loadissuereqs();
         });
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const searchbar = document.getElementById('searchbar');
+
+            searchbar.addEventListener('input', () => {
+                const query = searchbar.value;
+
+                fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const booksContainer = document.getElementById('books-container');
+                    booksContainer.innerHTML = '';
+                    if(data.length === 0){
+                        const notfound = `<div class="notfound">
+                                                <p>No matches for search : ${query}</p>
+                                            </div>`;
+                        booksContainer.insertAdjacentHTML('beforeend', notfound);
+                    }
+                    else{
+                        data.forEach(function(book)  {
+                            
+                            const truncatedTitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
+                            const truncatedDesc = book.description ? (book.description.length > 100 ? book.description.substring(0, 100) + '...' : book.description) : 'No description available';
+                            const card = `
+                                <div class="col-md-4">
+                                    <div class="carda">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${truncatedTitle}</h5>
+                                            <p class="card-text">Author: ${book.publisher}</p>
+                                            <p class="card-text">Description: ${truncatedDesc}</p>
+                                            <p class="card-text">Count: ${book.count}</p>
+                                            <a href="#" class="btn btn-primary issue-btn" data-title="${book.title}">Issue</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            booksContainer.insertAdjacentHTML('beforeend', card);
+                            
+                        });
+                    }
+                    $('.issue-btn').click(function() {
+                        const bookTitle = $(this).data('title');
+                        $('#modalContent').text(`Do you want to issue the book: ${bookTitle}?`);
+                        $('#issueModal').modal('show');
+                        $('#bookname').data('title', bookTitle); 
+                    });
+
+                    $('#cissue').click(function() {
+                        const bookTitle2 = $(this).data('title');
+                        console.log(`${bookTitle2}`);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+
+        
     </script>
-    ]
+    
     
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
