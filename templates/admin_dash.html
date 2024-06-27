@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Library Management Dashboard</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #6a1b9a;
+        }
+        .navbar-brand img {
+            height: 40px;
+        }
+        .navbar-nav .nav-link {
+            color: #fff !important;
+        }
+        .card {
+            margin: 20px 0;
+        }
+        .nav-link.active {
+            background-color: #8e24aa;
+        }
+        .view-more {
+            text-align: right;
+            margin-top: 10px;
+        }
+        .req {
+            flex: 1;      
+            padding-right: 10px;
+            width: 70%;
+        }
+        #but {
+            width: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .list-group2 {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr); /* 3 columns */
+            gap: 10px; /* Optional: space between items */
+        }
+        #accstudents {
+            max-height: 400px; 
+            overflow-y: auto;  
+            overflow-x: hidden; 
+            border: 1px solid #ddd; 
+            padding: 0px; 
+        }
+        #outOfStockBooksList {
+            max-height: 305px; 
+            overflow-y: auto;  
+            overflow-x: hidden; 
+            border: 1px solid #ddd; 
+            padding: 0px; 
+        }
+
+        @media (max-width: 767px) {
+            .d-flex {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .req {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            #but {
+                /* width: 60%; */
+                margin-bottom: 5px;
+                gap: 10px;
+                flex-direction: row;
+                align-items: flex-start;
+            }
+            #but button {
+                width: 60%;
+            }
+            }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <a class="navbar-brand" href="#">
+            <img src="../static/images/iitdh.png" alt="Institute Logo"> <!-- Replace with your logo path -->
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" onclick="showSection('dashboard')">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('manageBooks')">Manage Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('requestedBooks')">Requested Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('announcements')">Announcements</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="alert alert-success" style="display: none; margin-top: 0px;" role="alert" id="success">
+        This is a success alert—check it out!
+    </div>
+
+    <div class="alert alert-danger" style="display: none; margin-top: 0px;" role="alert" id="delete">
+        This is a success alert—check it out!
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-4">
+                <div id="dashboard" class="section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Dashboard</h1>
+                    </div>
+ 
+
+                    <!-- Analytics Cards -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Books Borrowed by Students</h5>
+                                    <canvas id="borrowedBooksChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Books Past Return Date</h5>
+                                    <canvas id="overdueBooksChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Updated Analytics Cards -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Books Out of Stock</h5>
+                                    <ul id="outOfStockBooksList" class="list-group">
+                                        <!-- List of out of stock books will be dynamically inserted here -->
+                                    </ul>
+                                    <!-- <div class="view-more">
+                                        <a href="outOfStockBooks.html">View More</a>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Books About to Get Out of Stock</h5>
+                                    <canvas id="aboutToGetOutOfStockBooksChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Popularity by Genre</h5>
+                                    <canvas id="genreBooksChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Books Returned</h5>
+                                    <canvas id="borrowedReturnedChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Issued Books</h5>
+                            <ul id="requestedBoomksList" class="list-group">
+                                <div class="d-flex flex-wrap ">
+                                    <div class="acc">
+                                        <ul id="accstudents" class="list-group2">
+                                            <!-- List of requested books will be dynamically inserted here -->
+                                        </ul>
+                                    </div>                                        
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Books Past Return Date</h5>
+                            <ul id="requestedBoomksList" class="list-group">
+                                <div class="d-flex flex-wrap ">
+                                    <div class="acc">
+                                        <ul id="accstudents" class="list-group2">
+                                            <!-- List of requested books will be dynamically inserted here -->
+                                        </ul>
+                                    </div>                                        
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Books Near Return Date</h5>
+                            <ul id="requestedBoomksList" class="list-group">
+                                <div class="d-flex flex-wrap ">
+                                    <div class="acc">
+                                        <ul id="accstudents" class="list-group2">
+                                            <!-- List of requested books will be dynamically inserted here -->
+                                        </ul>
+                                    </div>                                        
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="manageBooks" class="section" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Manage Books</h5>
+                            <form id="manageBooksForm">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="bookTitle">Book Title</label>
+                                        <input type="text" class="form-control" id="bookTitle" placeholder="Enter book title" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="bookAuthor">Book Author</label>
+                                        <input type="text" class="form-control" id="bookAuthor" placeholder="Enter book author">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="bookAuthor">Book Description</label>
+                                        <input type="text" class="form-control" id="bookdesc" placeholder="Enter book Description">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="bookAuthor">Book Genre</label>
+                                        <input type="text" class="form-control" id="bookgen" placeholder="Enter book Genre">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="bookAuthor">Department</label>
+                                        <input type="text" class="form-control" id="bookdept" placeholder="Enter book Department">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="bookAuthor">Count</label>
+                                        <input type="number" class="form-control" id="bookcount" placeholder="Enter number of books">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="bookAuthor">Book Publisher</label>
+                                        <input type="text" class="form-control" id="bookpub" placeholder="Enter book Publisher">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="add_book">Add Book</button>
+                                <!-- <button type="button" class="btn btn-danger" onclick="removeBook()">Remove Book</button> -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="requestedBooks" class="section" style="display: none;">
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Requested Books</h5>
+                            <ul id="requestedBooksList" class="list-group">
+                                <div class="d-flex flex-wrap ">
+                                    <div class="req">
+                                        <ul id="requestedBooksList" class="list-group">
+                                            <!-- List of requested books will be dynamically inserted here -->
+                                        </ul>
+                                        <!-- <li class="list-group-item">The Great Gatsby by F. Scott Fitzgerald</li> -->
+                                    </div>
+                                    <!-- <div id="but" class="align-self-center">
+                                        <button type="button" class="btn btn-success">Accept</button>
+                                        <button type="button" class="btn btn-danger">Delete</button>
+                                    </div> -->
+                                    
+                                </div>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div id="announcements" class="section" style="display: none;">
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Announcements</h5>
+                            <form id="announcementForm">
+                                <div class="form-group">
+                                    <!-- <label for="announcementText">Write Announcement</label> -->
+                                    <textarea class="form-control" id="announcementText" rows="3" placeholder="Write your announcement here"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Post Announcement</button>
+                            </form>
+                            <ul id="announcementList" class="list-group mt-4">
+                                <!-- List of announcements will be dynamically inserted here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Show specific section based on navigation click
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add('active');
+        }
+
+        // Sample data for charts
+        const borrowedBooksData = [40, 10, 30, 20, 7];
+        const overdueBooksData = [5, 39, 55, 10, 14];
+        const aboutToGetOutOfStockBooksData = [1, 1, 2, 3, 3];
+        const genreBooksData = [30, 20, 25, 15, 10];
+        const borrowedReturnedData = [5, 20, 5, 55, 20]; // Monthly returned data from Jan to May
+
+        // Sample data for out of stock books
+        const outOfStockBooks = [
+            'Book1', 'Book2', 'Book3', 'Book4', 'Book5',
+            'Book6', 'Book7', 'Book8', 'Book9', 'Book10'
+        ];
+
+        // Initialize out of stock books list
+        function initOutOfStockBooks() {
+            const list = document.getElementById('outOfStockBooksList');
+            list.innerHTML = '';
+            outOfStockBooks.slice(0, 5).forEach(book => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+                li.textContent = book;
+                list.appendChild(li);
+            });
+        }
+
+        // Initialize the charts
+        document.addEventListener('DOMContentLoaded', function () {
+            initOutOfStockBooks();
+
+            new Chart(document.getElementById('borrowedBooksChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May'],
+                    datasets: [{
+                        label: 'Books Borrowed',
+                        data: borrowedBooksData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('overdueBooksChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May'],
+                    datasets: [{
+                        label: 'Books Overdue',
+                        data: overdueBooksData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('aboutToGetOutOfStockBooksChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Book1', 'Book2', 'Book3', 'Book4', 'Book5'],
+                    datasets: [{
+                        label: 'Books About to Get Out of Stock',
+                        data: aboutToGetOutOfStockBooksData,
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1,
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('genreBooksChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['AI/ML', 'Electrical', 'Computer Science', 'Mechanical', 'Programming'],
+                    datasets: [{
+                        label: 'Books Borrowed by Genre',
+                        data: genreBooksData,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+            new Chart(document.getElementById('borrowedReturnedChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May'],
+                    datasets: [{
+                        label: 'Books Returned',
+                        data: borrowedReturnedData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+
+        document.getElementById('announcementForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const announcementText = document.getElementById('announcementText').value;
+
+            fetch('http://127.0.0.1:5000/announcements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ announcement: announcementText }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                loadAnnouncements();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+ 
+        function loadAnnouncements() {
+            fetch('http://127.0.0.1:5000/announcements')
+                .then(response => response.json())
+                .then(data => {
+                    const announcementList = document.getElementById('announcementList');
+                    announcementList.innerHTML = '';
+                    data.forEach(announcement => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item';
+                 
+                        const utcDate = new Date(announcement.timestamp);
+                        const istDate = new Date(utcDate.getTime() + (330 * 60000)); 
+                        const formattedDate = istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+                        li.textContent = `${announcement.announcement} (Posted on: ${formattedDate})`;
+                        announcementList.appendChild(li);
+                    });
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAnnouncements();
+        });
+
+
+        function loadAllIssueReqs() {
+            fetch('http://127.0.0.1:5000/loadallissuereqs')
+                .then(response => response.json())
+                .then(data => {
+                    const requestList = document.getElementById('requestedBooksList');
+                    requestList.innerHTML = ''; 
+
+                    if(data.length === 0) {
+                        const noRequestMessage = document.createElement('li');
+                        noRequestMessage.className = 'list-group-item';
+                        noRequestMessage.textContent = 'No issue requests.';
+                        requestList.appendChild(noRequestMessage);
+                    } else {
+                        data.forEach(req => {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'list-group-item d-flex justify-content-between align-items-left';
+
+                            const requestInfo = document.createElement('div');
+                            const utcDate = new Date(req.timestamp);
+                            const istDate = new Date(utcDate.getTime() + (330 * 60000)); 
+                            const formattedDate = istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+                            requestInfo.innerHTML = `<strong>Name:</strong> ${req.Name} <br><strong>Email:</strong> ${req.email} <br><strong>Book Requested:</strong> ${req.bookname} <br><em>(${formattedDate})</em>`;
+
+                            const buttonGroup = document.createElement('div');
+                            buttonGroup.className = 'btn-group';
+                            
+                            const acceptButton = document.createElement('button');
+                            acceptButton.className = 'btn btn-success';
+                            acceptButton.textContent = 'Accept';
+                            acceptButton.onclick = () => {
+            
+                                fetch('http://127.0.0.1:5000/accepted', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({ req: req })
+                                })
+                                
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log('Success:', data);
+                                    handleRequest(req._id, 'delete',0);
+                                    loadallaccreqs();
+                                    $('#issueModal').modal('hide');
+
+                                    const alert = document.getElementById('success');
+                                    alert.textContent = `Success! Book issued. Book : ${req.bookname} by ${req.Name}`;
+                                    alert.style.display = 'block';
+                                    setTimeout(() => {
+                                        alert.style.display = 'none';
+                                    }, 6000); 
+
+                                    // send email to user that the book is issued
+
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+                                loadallaccreqs();
+                            }
+
+                            const deleteButton = document.createElement('button');
+                            deleteButton.className = 'btn btn-danger';
+                            deleteButton.textContent = 'Delete';
+                            deleteButton.onclick = () => handleRequest(req._id, 'delete' , 1);
+                            
+
+                            buttonGroup.appendChild(acceptButton);
+                            buttonGroup.appendChild(deleteButton);
+
+                            listItem.appendChild(requestInfo);
+                            listItem.appendChild(buttonGroup);
+
+                            requestList.appendChild(listItem);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching issue requests:', error));
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAllIssueReqs();
+        });
+
+
+        function handleRequest(entryId, action , check) {
+            console.log(entryId.$oid);
+            if (action === 'delete') {
+                fetch(`http://127.0.0.1:5000/delete/${entryId.$oid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Delete success:', data);
+                    loadAllIssueReqs();  // Reload the list after deletion
+                    if(check == 1){
+                        $('#issueModal').modal('hide');
+
+                        const alert = document.getElementById('delete');
+                        alert.textContent = `The issue request has been deleted succesfully`;
+                        alert.style.display = 'block';
+                        setTimeout(() => {
+                            alert.style.display = 'none';
+                        }, 6000); 
+                    }
+                    
+
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+
+        // Ensure that the existing functions remain the same
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAllIssueReqs();
+            loadallaccreqs();
+        });
+
+
+
+        function loadallaccreqs() {
+            fetch('http://127.0.0.1:5000/loadaccbooks')
+                .then(response => response.json())
+                .then(data => {
+                    // console.log("Data received from server:", data);  
+                    const requestList = document.getElementById('accstudents');
+                    requestList.innerHTML = ''; 
+
+                    if (data.length === 0) {
+                        const noRequestMessage = document.createElement('li');
+                        noRequestMessage.className = 'list-group-item';
+                        noRequestMessage.textContent = 'No issue requests accepted.';
+                        requestList.appendChild(noRequestMessage);
+                    } else {
+                        data.forEach(req => {
+                            // console.log("Request object:", req); 
+                            const listItem = document.createElement('li');
+                            listItem.className = 'list-group-item d-flex justify-content-left align-items-left';
+
+                            const requestInfo = document.createElement('div');
+                            const utcDate = new Date(req.timestamp);
+                            const istDate = new Date(utcDate.getTime() + (330 * 60000)); 
+                            const formattedDate = istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+                            requestInfo.innerHTML = `<strong>Name:</strong> ${req.req.Name} | <strong>Email:</strong> ${req.req.email} |  <strong>Book Issued:</strong> ${req.req.bookname} | <strong>Issue Time: </strong> ${formattedDate}`;
+
+                            listItem.appendChild(requestInfo);
+                            requestList.appendChild(listItem);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching issue requests:', error));
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadallaccreqs();
+        });
+
+
+        document.getElementById('add_book').addEventListener('click', function (e) {
+            e.preventDefault();
+            const booktitle = document.getElementById('bookTitle').value;
+            const bookauth = document.getElementById('bookAuthor').value;
+            const bookdesc = document.getElementById('bookdesc').value;
+            const bookgenre = document.getElementById('bookgen').value;
+            const bookdept = document.getElementById('bookdept').value;
+            const bookcount = document.getElementById('bookcount').value;
+            const bookpub = document.getElementById('bookpub').value;
+
+            if(booktitle.length === 0){
+                const alert = document.getElementById('delete');
+                alert.textContent = `Enter the details of the book first`;
+                alert.style.display = 'block';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 6000); 
+            }
+
+            if(booktitle.length != 0){
+
+            fetch('http://127.0.0.1:5000/add_new_book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ bt: booktitle , ba: bookauth , bdesc: bookdesc , bg: bookgenre, bdept: bookdept, bc: bookcount, bp: bookpub }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                const alert = document.getElementById('success');
+                alert.textContent = `Success! Book Added Succesfully : ${booktitle} by ${bookauth}`;
+                alert.style.display = 'block';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 6000); 
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+            }
+        });
+
+        function add_ofs_books(){
+            fetch('http://127.0.0.1:5000/books')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(function(book) {
+                    // const truncatedTitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
+                    // const truncatedDesc = book.description ? (book.description.length > 100 ? book.description.substring(0, 100) + '...' : book.description) : 'No description available';
+
+                    if(book.count === 0){
+                        
+                        fetch('http://127.0.0.1:5000/out_of_stock' ,{
+                            method: 'POST',
+                            headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                            body: JSON.stringify(book),
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Success:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+
+                    }
+                    
+                });
+
+            })
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            add_ofs_books();
+        });
+
+        function load_ofs_books() {
+            fetch('http://127.0.0.1:5000/load_out_of_stock_books')
+                .then(response => response.json())
+                .then(data => {
+                    // console.log("Data received from server:", data);  
+                    const requestList = document.getElementById('outOfStockBooksList');
+                    requestList.innerHTML = ''; 
+
+                    if (data.length === 0) {
+                        const noRequestMessage = document.createElement('li');
+                        noRequestMessage.className = 'list-group-item';
+                        noRequestMessage.textContent = 'All the books are in stock :)';
+                        requestList.appendChild(noRequestMessage);
+                    } else {
+                        data.forEach(req => {
+                            // console.log("Request object:", req); 
+                            const listItem = document.createElement('li');
+                            listItem.className = 'list-group-item d-flex justify-content-left align-items-left';
+
+                            const requestInfo = document.createElement('div');
+                            requestInfo.innerHTML = `<strong>Book:</strong> ${req.title} | <strong>Authors:</strong> ${req.author}`;
+
+                            listItem.appendChild(requestInfo);
+                            requestList.appendChild(listItem);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching issue requests:', error));
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            load_ofs_books();
+        });
+
+
+        
+
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</body>
+</html>
