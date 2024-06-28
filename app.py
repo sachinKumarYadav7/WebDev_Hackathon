@@ -285,6 +285,3 @@ def load_out_of_stock_books():
     return dumps(ofs_books), 200
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
