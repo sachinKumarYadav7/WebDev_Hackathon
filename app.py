@@ -13,7 +13,7 @@ import smtplib
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://iit-dh-library.onrender.com"}})
+CORS(app, resources={r"/load_acc_by_user": {"origins": ["http://52.41.36.82", "http://54.191.253.12", "http://44.226.122.3"]}})
 
 app.secret_key = "your_secret_key"  # Add a secret key for session management
 
