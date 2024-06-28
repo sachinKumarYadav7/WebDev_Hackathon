@@ -27,7 +27,7 @@ books = pd.read_json('./Recommender_System/UpdatedDatasetSOI .json')
 books['book_id'] = range(1, len(books) + 1)
 books['book_id'] = books['book_id'].apply(lambda x: str(x).zfill(6))
 books['book_id'] = books['book_id'].astype(int)
-user_ratings = pd.read_csv('./Recommender_System/user_ratings.json')  # Update with the correct path to your dataset
+user_ratings = pd.read_json('./Recommender_System/user_ratings.json')  # Update with the correct path to your dataset
 
 # Precompute the cosine similarity matrix for content-based filtering
 tfidf = TfidfVectorizer(stop_words='english')
@@ -80,8 +80,12 @@ def recommend():
     recommendations = get_hybrid_recommendations(title, user_id, cosine_sim, num_recommendations)
     return recommendations.to_json(orient='records')
 
+
+
+
 # Connect to MongoDB
-client = MongoClient("mongodb://localhost:27017/")
+# client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://Samarth_7:Sam_mongo_atlas@iitdhcluster.a1gizlj.mongodb.net/?retryWrites=true&w=majority&appName=iitdhcluster")
 
 db = client.admin  # replace 'login_user' with your database name
 users_collection = db.user_login  # replace 'users' with your collection name
