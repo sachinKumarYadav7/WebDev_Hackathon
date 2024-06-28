@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, redirect, request, jsonify,url_for
 from functools import wraps
 from pymongo import MongoClient
+from flask_cors import CORS
 from flask import Flask, request, jsonify
 # from flask_pymongo import PyMongo
 from bson.json_util import dumps
@@ -12,6 +13,7 @@ import smtplib
 
 
 app = Flask(__name__)
+CORS(app)
 app.secret_key = "your_secret_key"  # Add a secret key for session management
 
 # Connect to MongoDB
@@ -283,5 +285,4 @@ def out_of_stick():
 def load_out_of_stock_books():
     ofs_books = stock.find().sort("timestamp", +1)
     return dumps(ofs_books), 200
-
 
