@@ -284,7 +284,6 @@ def load_out_of_stock_books():
     ofs_books = stock.find().sort("timestamp", +1)
     return dumps(ofs_books), 200
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
 
 
