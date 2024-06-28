@@ -15,21 +15,21 @@ app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Add a secret key for session management
 
 # Connect to MongoDB
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://Samarth_7:Sam_mongo_atlas@iitdhcluster.a1gizlj.mongodb.net/?retryWrites=true&w=majority&appName=iitdhcluster")
 
-db = client.admin  # replace 'login_user' with your database name
+db = client.admi  # replace 'login_user' with your database name
 users_collection = db.user_login  # replace 'users' with your collection name
 
 allb = client.all_books  # replace 'login_user' with your database name
 b = allb.books2  # replace 'users' with your collection name
 
-announce = client.admin
+announce = client.admi
 announcements = announce.announcements
 
-issue = client.admin
-acc = client.admin
+issue = client.admi
+acc = client.admi
 
-ofs = client.admin
+ofs = client.admi
 stock = ofs.out_of_stock
 
 
@@ -285,5 +285,6 @@ def load_out_of_stock_books():
     return dumps(ofs_books), 200
 
 
-
+if __name__ == '__main__':
+    app.run(debug=True)
 
