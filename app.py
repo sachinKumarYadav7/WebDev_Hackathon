@@ -10,9 +10,75 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib
 
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel, cosine_similarity
+
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Add a secret key for session management
+
+
+
+#Recommendation system
+# Load your data here
+books = pd.read_json('./Recommender_System/UpdatedDatasetSOI .json') 
+books['book_id'] = range(1, len(books) + 1)
+books['book_id'] = books['book_id'].apply(lambda x: str(x).zfill(6))
+books['book_id'] = books['book_id'].astype(int)
+user_ratings = pd.read_csv('./Recommender_System/user_ratings.json')  # Update with the correct path to your dataset
+
+# Precompute the cosine similarity matrix for content-based filtering
+tfidf = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf.fit_transform(books['description'])
+cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
+# Define the functions here
+def get_content_based_recommendations(title, cosine_sim):
+    indices = pd.Series(books.index, index=books['title']).drop_duplicates()
+    idx = indices[title]
+    
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:11]
+    
+    book_indices = [i[0] for i in sim_scores]
+    return books.iloc[book_indices]
+
+def get_collaborative_filtering_recommendations(user_id, num_recommendations=10):
+    user_similarity = cosine_similarity(user_ratings)
+    np.fill_diagonal(user_similarity, 0)
+    
+    user_similarity_df = pd.DataFrame(user_similarity, index=user_ratings.index, columns=user_ratings.index)
+    
+    user_similarities = user_similarity_df[user_id].sort_values(ascending=False)
+    similar_users = user_similarities.index[:10]
+    
+    similar_users_ratings = user_ratings.loc[similar_users]
+    mean_ratings = similar_users_ratings.mean(axis=0).sort_values(ascending=False)
+    
+    user_books = user_ratings.loc[user_id].dropna().index
+    recommendations = mean_ratings.drop(user_books).head(num_recommendations)
+    
+    return recommendations
+
+def get_hybrid_recommendations(title, user_id, cosine_sim, num_recommendations=10):
+    content_based_recs = get_content_based_recommendations(title, cosine_sim)
+    collaborative_recs = get_collaborative_filtering_recommendations(user_id, num_recommendations)
+    
+    combined_recs = pd.concat([content_based_recs, collaborative_recs]).drop_duplicates().head(num_recommendations)
+    return combined_recs
+
+# Define routes
+@app.route('/recommend', methods=['GET'])
+def recommend():
+    title = request.args.get('title')
+    user_id = int(request.args.get('user_id'))
+    num_recommendations = int(request.args.get('num_recommendations', 10))
+    
+    recommendations = get_hybrid_recommendations(title, user_id, cosine_sim, num_recommendations)
+    return recommendations.to_json(orient='records')
 
 # Connect to MongoDB
 client = MongoClient("mongodb://localhost:27017/")
