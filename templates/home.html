@@ -212,7 +212,7 @@
     <script>
 
         function load_all_books(){
-            fetch('http://127.0.0.1:5000/books')
+            fetch('https://54.191.253.12/books')
             .then(response => response.json())
             .then(data => {
                 const booksContainer = $('#books-container');
@@ -363,7 +363,7 @@
 
 
         function loadAnnouncements() {
-            fetch('http://127.0.0.1:5000/announcements')
+            fetch('https://54.191.253.12/announcements')
                 .then(response => response.json())
                 .then(data => {
                     if(data.length == 0){
@@ -428,7 +428,7 @@
         });
 
         function loadissuereqs() {
-            fetch('http://54.191.253.12/loadissuereqs', {
+            fetch('https://54.191.253.12/loadissuereqs', {
                     method: 'GET',
                     mode: 'no-cors'
                 })
