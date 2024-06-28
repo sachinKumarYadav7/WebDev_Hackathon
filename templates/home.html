@@ -428,7 +428,10 @@
         });
 
         function loadissuereqs() {
-            fetch('http://127.0.0.1:5000/loadissuereqs')
+            fetch('http://127.0.0.1:5000/loadissuereqs', {
+                    method: 'GET',
+                    mode: 'no-cors'
+                })
                 .then(response => response.json())
                 .then(data => {
                     if(data.length == 0){
@@ -641,7 +644,10 @@
             let num_of_accbooks = 0;
 
             function load_acc_by_user() {
-                fetch('http://127.0.0.1:5000/load_acc_by_user')
+                fetch('http://127.0.0.1:5000/load_acc_by_user', {
+                        method: 'GET',
+                        mode: 'no-cors'
+                    })
                     .then(response => response.json())
                     .then(data => {
                         const rem = document.getElementById('rem');
