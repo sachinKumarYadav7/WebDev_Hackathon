@@ -13,11 +13,13 @@ import smtplib
 
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://iit-dh-library.onrender.com"}})
+
 app.secret_key = "your_secret_key"  # Add a secret key for session management
 
 # Connect to MongoDB
 client = MongoClient("mongodb+srv://Samarth_7:Sam_mongo_atlas@iitdhcluster.a1gizlj.mongodb.net/?retryWrites=true&w=majority&appName=iitdhcluster")
+# client = MongoClient("mongodb://localhost:27017")
 
 db = client.admi  # replace 'login_user' with your database name
 users_collection = db.user_login  # replace 'users' with your collection name
@@ -286,3 +288,5 @@ def load_out_of_stock_books():
     ofs_books = stock.find().sort("timestamp", +1)
     return dumps(ofs_books), 200
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
