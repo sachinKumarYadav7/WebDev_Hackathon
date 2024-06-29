@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <title>Responsive Dashboard</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" type="text/css" href="../static/css/dashboard.css">
     <style>
         body {
@@ -281,87 +281,7 @@
             load_all_books();
         });
 
-        // $(document).ready(function() {
-        //     $.get('/books', function(data) {
-        //         const booksContainer = $('#books-container');
-        //         if (data.length === 0) {
-        //             booksContainer.append('<p>No books available.</p>');
-        //         } else {
-        //             data.forEach(function(book) {
-        //                 const truncatedTitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
-        //                 const truncatedDesc = book.description ? (book.description.length > 100 ? book.description.substring(0, 100) + '...' : book.description) : 'No description available';
-                    
-        //                 let card;
-
-        //                 if(book.count === 0){
-        //                     console.log(book);
-        //                     card = `
-        //                         <div class="col-md-4">
-        //                             <div class="carda">
-        //                                 <div class="card-body">
-        //                                     <h5 class="card-title">${truncatedTitle}</h5>
-        //                                     <p class="card-text">Author: ${book.author}</p>
-        //                                     <p class="card-text">Description: ${truncatedDesc}</p>
-        //                                     <p class="card-text">Count: ${book.count}</p>
-        //                                     <p class="card-text text-warning">This book will be back soon.</p>
-
-        //                                 </div>
-        //                             </div>
-        //                         </div>
-        //                     `;
-        //                     fetch('http://127.0.0.1:5000/out_of_stock' ,{
-        //                         method: 'POST',
-        //                         headers: {
-        //                                 'Content-Type': 'application/json',
-        //                             },
-        //                         body: JSON.stringify(book),
-        //                     })
-        //                     .then(response => response.json())
-        //                     .then(data => {
-        //                         console.log('Success:', data);
-        //                     })
-        //                     .catch((error) => {
-        //                         console.error('Error:', error);
-        //                     });
-
-        //                 }
-        //                 else{
-        //                     card = `
-        //                     <div class="col-md-4">
-        //                         <div class="carda">
-        //                             <div class="card-body">
-        //                                 <h5 class="card-title">${truncatedTitle}</h5>
-        //                                 <p class="card-text">Author: ${book.author}</p>
-        //                                 <p class="card-text">Description: ${truncatedDesc}</p>
-        //                                 <p class="card-text">Count: ${book.count}</p>
-        //                                 <a href="#" class="btn btn-primary issue-btn" data-title="${book.title}">Issue</a>
-        //                             </div>
-        //                         </div>
-        //                     </div>
-        //                 `;
-        //                 }
-        //                 booksContainer.append(card);
-        //             });
-
-        //             $('.issue-btn').click(function() {
-        //                 const bookTitle = $(this).data('title');
-        //                 $('#modalContent').text(`Do you want to issue the book: ${bookTitle}?`);
-        //                 $('#issueModal').modal('show');
-        //                 $('#bookname').data('title', bookTitle); 
-        //                 // console.log(`${bookTitle}`);
-        //             });
-
-        //             $('#cissue').click(function() {
-        //                 const bookTitle2 = $(this).data('title');
-        //                 console.log(`${bookTitle2}`);
-        //             });
-        //         }
-        //     });
-
-           
-        // });
-
-
+       
         function loadAnnouncements() {
             fetch('https://iit-dh-library.onrender.com/announcements')
                 .then(response => response.json())
