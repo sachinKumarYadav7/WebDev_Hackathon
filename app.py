@@ -2,6 +2,7 @@ from flask import Flask, render_template, session, redirect, request, jsonify,ur
 from functools import wraps
 from pymongo import MongoClient
 from flask_cors import CORS
+import logging
 from flask import Flask, request, jsonify
 # from flask_pymongo import PyMongo
 from bson.json_util import dumps
@@ -13,13 +14,15 @@ import smtplib
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/load_acc_by_user": {"origins": ["http://52.41.36.82", "http://54.191.253.12", "http://44.226.122.3"]}})
+CORS(app)
 
 app.secret_key = "your_secret_key"  # Add a secret key for session management
 
 # Connect to MongoDB
 client = MongoClient("mongodb+srv://Samarth_7:Sam_mongo_atlas@iitdhcluster.a1gizlj.mongodb.net/?retryWrites=true&w=majority&appName=iitdhcluster")
 # client = MongoClient("mongodb://localhost:27017")
+
+
 
 db = client.admi  # replace 'login_user' with your database name
 users_collection = db.user_login  # replace 'users' with your collection name
@@ -288,5 +291,3 @@ def load_out_of_stock_books():
     ofs_books = stock.find().sort("timestamp", +1)
     return dumps(ofs_books), 200
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)

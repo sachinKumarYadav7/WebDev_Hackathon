@@ -1,0 +1,7 @@
+2024-06-29 09:53:45,884 WARNING werkzeug MainThread :  * Debugger is active!
+2024-06-29 09:53:45,893 INFO werkzeug MainThread :  * Debugger PIN: 928-798-650
+2024-06-29 09:54:03,556 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\samar\\OneDrive\\Desktop\\WebDev\\Lib_project\\app.py', reloading
+2024-06-29 09:54:04,644 INFO root MainThread : Connected to MongoDB Atlas successfully
+2024-06-29 09:54:04,656 WARNING werkzeug MainThread :  * Debugger is active!
+2024-06-29 09:54:04,662 INFO werkzeug MainThread :  * Debugger PIN: 928-798-650
+2024-06-29 09:54:57,649 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\samar\\OneDrive\\Desktop\\WebDev\\Lib_project\\app.py', reloading
