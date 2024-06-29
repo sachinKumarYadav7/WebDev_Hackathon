@@ -1,5 +1,6 @@
 from flask import Flask, render_template, session, redirect, request, jsonify,url_for
 from functools import wraps
+import os
 from pymongo import MongoClient
 from flask_cors import CORS
 import logging
@@ -291,3 +292,6 @@ def load_out_of_stock_books():
     ofs_books = stock.find().sort("timestamp", +1)
     return dumps(ofs_books), 200
 
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
