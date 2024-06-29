@@ -15,7 +15,7 @@ import smtplib
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/load_acc_by_user": {"origins": ["http://52.41.36.82", "http://54.191.253.12", "http://44.226.122.3"]}})
+CORS(app)
 
 app.secret_key = "your_secret_key"  # Add a secret key for session management
 
@@ -141,7 +141,7 @@ def get_requests():
     issue_requests = issue.issue_request.find({"email": email}).sort("timestamp", -1)
     return dumps(issue_requests), 200
 
-@app.route('/loadallissueeqs', methods=['GET'])
+@app.route('/loadallissuereqs', methods=['GET'])
 def get_all_requests():
     issue_requests = issue.issue_request.find().sort("timestamp", -1)
     return dumps(issue_requests), 200
@@ -170,8 +170,8 @@ def add_to_accepted():
     subject = f'Book Issued: {req["bookname"]}'
     message = f'Hello {req["Name"]},\n\nYour book "{req["bookname"]}" has been successfully issued.\nThe book has been issued for 15 days, please return it before deadline.\n\nBest regards,\nLibrary Team'
 
-    sender_email = 'pssquare169@gmail.com'
-    sender_password = 'ChitnisKumarJha'
+    sender_email = '220010052@iitdh.ac.in'
+    sender_password = 'Sam_IITDH_7'
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
 
