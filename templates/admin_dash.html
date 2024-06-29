@@ -494,7 +494,7 @@
             e.preventDefault();
             const announcementText = document.getElementById('announcementText').value;
 
-            fetch('http://127.0.0.1:5000/announcements', {
+            fetch('https://iit-dh-library.onrender.com/announcements', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -513,7 +513,7 @@
 
  
         function loadAnnouncements() {
-            fetch('http://127.0.0.1:5000/announcements')
+            fetch('https://iit-dh-library.onrender.com/announcements')
                 .then(response => response.json())
                 .then(data => {
                     const announcementList = document.getElementById('announcementList');
@@ -538,7 +538,7 @@
 
 
         function loadAllIssueReqs() {
-            fetch('http://127.0.0.1:5000/loadallissuereqs')
+            fetch('https://iit-dh-library.onrender.com/loadallissuereqs')
                 .then(response => response.json())
                 .then(data => {
                     const requestList = document.getElementById('requestedBooksList');
@@ -568,7 +568,7 @@
                             acceptButton.textContent = 'Accept';
                             acceptButton.onclick = () => {
             
-                                fetch('http://127.0.0.1:5000/accepted', {
+                                fetch('https://iit-dh-library.onrender.com/accepted', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
@@ -627,7 +627,7 @@
         function handleRequest(entryId, action , check) {
             console.log(entryId.$oid);
             if (action === 'delete') {
-                fetch(`http://127.0.0.1:5000/delete/${entryId.$oid}`, {
+                fetch(`https://iit-dh-library.onrender.com/delete/${entryId.$oid}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -665,7 +665,7 @@
 
 
         function loadallaccreqs() {
-            fetch('http://127.0.0.1:5000/loadaccbooks')
+            fetch('https://iit-dh-library.onrender.com/loadaccbooks')
                 .then(response => response.json())
                 .then(data => {
                     // console.log("Data received from server:", data);  
@@ -724,7 +724,7 @@
 
             if(booktitle.length != 0){
 
-            fetch('http://127.0.0.1:5000/add_new_book', {
+            fetch('https://iit-dh-library.onrender.com/add_new_book', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -748,7 +748,7 @@
         });
 
         function add_ofs_books(){
-            fetch('http://127.0.0.1:5000/books')
+            fetch('https://iit-dh-library.onrender.com/books')
             .then(response => response.json())
             .then(data => {
                 data.forEach(function(book) {
@@ -757,7 +757,7 @@
 
                     if(book.count === 0){
                         
-                        fetch('http://127.0.0.1:5000/out_of_stock' ,{
+                        fetch('https://iit-dh-library.onrender.com/out_of_stock' ,{
                             method: 'POST',
                             headers: {
                                     'Content-Type': 'application/json',
@@ -784,7 +784,7 @@
         });
 
         function load_ofs_books() {
-            fetch('http://127.0.0.1:5000/load_out_of_stock_books')
+            fetch('https://iit-dh-library.onrender.com/load_out_of_stock_books')
                 .then(response => response.json())
                 .then(data => {
                     // console.log("Data received from server:", data);  

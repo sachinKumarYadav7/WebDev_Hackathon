@@ -212,7 +212,7 @@
     <script>
 
         function load_all_books(){
-            fetch('http://127.0.0.1:5000/books')
+            fetch('https://iit-dh-library.onrender.com/books')
             .then(response => response.json())
             .then(data => {
                 const booksContainer = $('#books-container');
@@ -363,7 +363,7 @@
 
 
         function loadAnnouncements() {
-            fetch('http://127.0.0.1:5000/announcements')
+            fetch('https://iit-dh-library.onrender.com/announcements')
                 .then(response => response.json())
                 .then(data => {
                     if(data.length == 0){
@@ -400,7 +400,7 @@
                 const bookTitle = issueText.slice(startIndex, endIndex);
                 console.log(bookTitle.trim()); 
 
-            fetch('http://127.0.0.1:5000/issue_req' , {
+            fetch('https://iit-dh-library.onrender.com/issue_req' , {
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json',
@@ -428,7 +428,7 @@
         });
 
         function loadissuereqs() {
-            fetch('http://127.0.0.1:5000/loadissuereqs', {
+            fetch('https://iit-dh-library.onrender.com/loadissuereqs', {
                     method: 'GET',
                     mode: 'cors'
                 })
