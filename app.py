@@ -170,8 +170,13 @@ def add_to_accepted():
     subject = f'Book Issued: {req["bookname"]}'
     message = f'Hello {req["Name"]},\n\nYour book "{req["bookname"]}" has been successfully issued.\nThe book has been issued for 15 days, please return it before deadline.\n\nBest regards,\nLibrary Team'
 
+
     sender_email = '220010052@iitdh.ac.in'
     sender_password = 'vqst edwo frvk ygoe'
+
+    sender_email = 'pssquare169@gmail.com'
+    sender_password = 'ChitnisKumarJha'
+
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
 
