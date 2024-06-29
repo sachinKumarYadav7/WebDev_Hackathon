@@ -1,0 +1,24 @@
+[{
+  "_id": {
+    "$oid": "658339213850188db4594d07"
+  },
+  "email": "220010052@iitdh.ac.in",
+  "password": "pa",
+  "name": "Samarth Chitnis"
+},
+{
+  "_id": {
+    "$oid": "6655f3692e5c8e859f6d1529"
+  },
+  "email": "220020045@iitdh.ac.in",
+  "password": "pass",
+  "name": "Prabhanshu Kumar Jha"
+},
+{
+  "_id": {
+    "$oid": "666820a05dbae33fd65cff33"
+  },
+  "email": "new",
+  "password": "new",
+  "name": "dummy"
+}]
