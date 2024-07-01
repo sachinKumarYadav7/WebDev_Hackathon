@@ -66,8 +66,8 @@ The Website is live at: [Library Management System](https://iit-dh-library.onren
 Use the following credentials to log in:
 
 **For Admin:**
-- Email: admin@gmail.com
-- Password: admin
+- Email: admin@iitdh.ac.in
+- Password: admin_IIT_Dh
 
 **For Users:**
 - Email: 220020045@iitdh.ac.in
