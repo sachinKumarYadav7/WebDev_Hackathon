@@ -236,6 +236,8 @@
                     </div>
                 </div>
 
+                
+
                 <div id="manageBooks" class="section" style="display: none;">
                     <div class="card">
                         <div class="card-body">
@@ -251,29 +253,57 @@
                                         <input type="text" class="form-control" id="bookAuthor" placeholder="Enter book author">
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label for="bookAuthor">Book Description</label>
-                                        <input type="text" class="form-control" id="bookdesc" placeholder="Enter book Description">
+                                        <label for="bookDescription">Book Description</label>
+                                        <input type="text" class="form-control" id="bookDescription" placeholder="Enter book description">
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label for="bookAuthor">Book Genre</label>
-                                        <input type="text" class="form-control" id="bookgen" placeholder="Enter book Genre">
+                                        <label for="bookGenre">Book Genre</label>
+                                        <input type="text" class="form-control" id="bookGenre" placeholder="Enter book genre">
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label for="bookAuthor">Department</label>
-                                        <input type="text" class="form-control" id="bookdept" placeholder="Enter book Department">
+                                        <label for="bookDepartment">Department</label>
+                                        <input type="text" class="form-control" id="bookDepartment" placeholder="Enter book department">
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label for="bookAuthor">Count</label>
-                                        <input type="number" class="form-control" id="bookcount" placeholder="Enter number of books">
+                                        <label for="bookCount">Count</label>
+                                        <input type="number" class="form-control" id="bookCount" placeholder="Enter number of books">
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label for="bookAuthor">Book Publisher</label>
-                                        <input type="text" class="form-control" id="bookpub" placeholder="Enter book Publisher">
+                                        <label for="bookPublisher">Book Publisher</label>
+                                        <input type="text" class="form-control" id="bookPublisher" placeholder="Enter book publisher">
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary" id="add_book">Add Book</button>
-                                <!-- <button type="button" class="btn btn-danger" onclick="removeBook()">Remove Book</button> -->
                             </form>
+                        </div>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Search Books</h5>
+                            <input type="text" class="form-control" id="searchBar" placeholder="Search for books...">
+                        </div>
+                    </div>
+
+                    <!-- List of Books -->
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">List of Books</h5>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">Author</th>
+                                        <th scope="col">Genre</th>
+                                        <th scope="col">Count</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="booksTableBody">
+                                    <!-- List of books will be dynamically inserted here -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -490,11 +520,112 @@
             });
         });
 
+        
+        // function showSection(sectionId) {
+        //     const sections = document.querySelectorAll('.section');
+        //     sections.forEach(section => {
+        //         section.style.display = 'none';
+        //     });
+        //     document.getElementById(sectionId).style.display = 'block';
+        // }
+
+        // function addBookToTable(bookData) {
+        //     const tableBody = document.getElementById('booksTableBody');
+        //     const row = document.createElement('tr');
+
+        //     row.innerHTML = `
+        //         <td>${bookData.title}</td>
+        //         <td>${bookData.author}</td>
+        //         <td>${bookData.genre}</td>
+        //         <td>${bookData.count}</td>
+        //         <td>
+        //             <button class="btn btn-warning btn-sm" onclick="editBook(this)">Edit</button>
+        //             <button class="btn btn-danger btn-sm" onclick="removeBook(this)">Remove</button>
+        //         </td>
+        //     `;
+        //     tableBody.appendChild(row);
+        // }
+
+        // document.getElementById('manageBooksForm').addEventListener('submit', function (e) {
+        //     e.preventDefault();
+        //     // Logic to add the book
+        //     const bookData = {
+        //         title: document.getElementById('bookTitle').value,
+        //         author: document.getElementById('bookAuthor').value,
+        //         description: document.getElementById('bookDescription').value,
+        //         genre: document.getElementById('bookGenre').value,
+        //         department: document.getElementById('bookDepartment').value,
+        //         count: document.getElementById('bookCount').value,
+        //         publisher: document.getElementById('bookPublisher').value,
+        //     };
+        //     addBookToTable(bookData);
+        //     // Reset form
+        //     document.getElementById('manageBooksForm').reset();
+        // });
+
+        
+
+        // function editBook(button) {
+        //     const row = button.closest('tr');
+        //     const cells = row.children;
+
+        //     const bookData = {
+        //         title: cells[0].textContent,
+        //         author: cells[1].textContent,
+        //         genre: cells[2].textContent,
+        //         count: cells[3].textContent,
+        //     };
+
+        //     document.getElementById('bookTitle').value = bookData.title;
+        //     document.getElementById('bookAuthor').value = bookData.author;
+        //     document.getElementById('bookGenre').value = bookData.genre;
+        //     document.getElementById('bookCount').value = bookData.count;
+
+        //     row.remove();
+
+        //     // Scroll to the top of the page
+        //     window.scrollTo({ top: 0, behavior: 'smooth' });
+        // }
+
+        // function removeBook(button) {
+        //     const row = button.closest('tr');
+        //     row.remove();
+        // }
+
+        // document.getElementById('searchBar').addEventListener('input', function () {
+        //     const searchTerm = this.value.toLowerCase();
+        //     const rows = document.querySelectorAll('#booksTableBody tr');
+        //     rows.forEach(row => {
+        //         const title = row.children[0].textContent.toLowerCase();
+        //         const author = row.children[1].textContent.toLowerCase();
+        //         const genre = row.children[2].textContent.toLowerCase();
+        //         if (title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm)) {
+        //             row.style.display = '';
+        //         } else {
+        //             row.style.display = 'none';
+        //         }
+        //     });
+        // });
+
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     const initialBooks = [
+        //         { title: 'To Kill a Mockingbird', author: 'Harper Lee', genre: 'Fiction', count: 4 },
+        //         { title: '1984', author: 'George Orwell', genre: 'Dystopian', count: 3 },
+        //         { title: 'Moby Dick', author: 'Herman Melville', genre: 'Adventure', count: 2 },
+        //         { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', genre: 'Classic', count: 5 },
+        //         { title: 'War and Peace', author: 'Leo Tolstoy', genre: 'Historical', count: 1 }
+        //     ];
+
+        //     initialBooks.forEach(book => {
+        //         addBookToTable(book);
+        //     });
+        // });
+
         document.getElementById('announcementForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const announcementText = document.getElementById('announcementText').value;
 
-            fetch('https://iit-dh-library.onrender.com/announcements', {
+            fetch('http://127.0.0.1:5000/announcements', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -513,7 +644,7 @@
 
  
         function loadAnnouncements() {
-            fetch('https://iit-dh-library.onrender.com/announcements')
+            fetch('http://127.0.0.1:5000/announcements')
                 .then(response => response.json())
                 .then(data => {
                     const announcementList = document.getElementById('announcementList');
@@ -538,7 +669,7 @@
 
 
         function loadAllIssueReqs() {
-            fetch('https://iit-dh-library.onrender.com/loadallissuereqs')
+            fetch('http://127.0.0.1:5000/loadallissuereqs')
                 .then(response => response.json())
                 .then(data => {
                     const requestList = document.getElementById('requestedBooksList');
@@ -568,7 +699,7 @@
                             acceptButton.textContent = 'Accept';
                             acceptButton.onclick = () => {
             
-                                fetch('https://iit-dh-library.onrender.com/accepted', {
+                                fetch('http://127.0.0.1:5000/accepted', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
@@ -627,7 +758,7 @@
         function handleRequest(entryId, action , check) {
             console.log(entryId.$oid);
             if (action === 'delete') {
-                fetch(`https://iit-dh-library.onrender.com/delete/${entryId.$oid}`, {
+                fetch(`http://127.0.0.1:5000/delete/${entryId.$oid}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -665,7 +796,7 @@
 
 
         function loadallaccreqs() {
-            fetch('https://iit-dh-library.onrender.com/loadaccbooks')
+            fetch('http://127.0.0.1:5000/loadaccbooks')
                 .then(response => response.json())
                 .then(data => {
                     // console.log("Data received from server:", data);  
@@ -703,120 +834,192 @@
         });
 
 
-        document.getElementById('add_book').addEventListener('click', function (e) {
-            e.preventDefault();
-            const booktitle = document.getElementById('bookTitle').value;
-            const bookauth = document.getElementById('bookAuthor').value;
-            const bookdesc = document.getElementById('bookdesc').value;
-            const bookgenre = document.getElementById('bookgen').value;
-            const bookdept = document.getElementById('bookdept').value;
-            const bookcount = document.getElementById('bookcount').value;
-            const bookpub = document.getElementById('bookpub').value;
+// Show sections of the page
+function showSection(sectionId) {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+    document.getElementById(sectionId).style.display = 'block';
+}
 
-            if(booktitle.length === 0){
-                const alert = document.getElementById('delete');
-                alert.textContent = `Enter the details of the book first`;
-                alert.style.display = 'block';
-                setTimeout(() => {
-                    alert.style.display = 'none';
-                }, 6000); 
-            }
+// Add or update a book
+document.getElementById('manageBooksForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const bookId = document.getElementById('bookId').value;
+    const bookData = {
+        title: document.getElementById('bookTitle').value,
+        author: document.getElementById('bookAuthor').value,
+        description: document.getElementById('bookDescription').value,
+        genre: document.getElementById('bookGenre').value,
+        department: document.getElementById('bookDepartment').value,
+        count: document.getElementById('bookCount').value,
+        publisher: document.getElementById('bookPublisher').value,
+    };
 
-            if(booktitle.length != 0){
+    const url = bookId ? `http://127.0.0.1:5000/books/${bookId}` : 'http://127.0.0.1:5000/add_new_book';
+    const method = bookId ? 'PUT' : 'POST';
 
-            fetch('https://iit-dh-library.onrender.com/add_new_book', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ bt: booktitle , ba: bookauth , bdesc: bookdesc , bg: bookgenre, bdept: bookdept, bc: bookcount, bp: bookpub }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                const alert = document.getElementById('success');
-                alert.textContent = `Success! Book Added Succesfully : ${booktitle} by ${bookauth}`;
-                alert.style.display = 'block';
-                setTimeout(() => {
-                    alert.style.display = 'none';
-                }, 6000); 
-            })
-            .catch((error) => {
-                console.error('Error:', error);
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+        const alert = document.getElementById('success');
+        alert.textContent = bookId ? 'Success! Book Updated Successfully' : 'Success! Book Added Successfully';
+        alert.style.display = 'block';
+        setTimeout(() => {
+            alert.style.display = 'none';
+        }, 6000);
+        loadBooks();
+        document.getElementById('manageBooksForm').reset();
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+});
+
+// Fetch and display books from MongoDB
+function loadBooks() {
+    fetch('http://127.0.0.1:5000/books')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('booksTableBody');
+            tableBody.innerHTML = '';
+            data.forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.genre}</td>
+                    <td>${book.count}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editBook('${book._id}')">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="removeBook('${book._id}')">Remove</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
             });
-            }
-        });
+        })
+        .catch(error => console.error('Error fetching books:', error));
+}
 
-        function add_ofs_books(){
-            fetch('https://iit-dh-library.onrender.com/books')
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(function(book) {
-                    // const truncatedTitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
-                    // const truncatedDesc = book.description ? (book.description.length > 100 ? book.description.substring(0, 100) + '...' : book.description) : 'No description available';
+// Edit book details
+function editBook(bookId) {
+    fetch(`http://127.0.0.1:5000/books/${bookId}`)
+        .then(response => response.json())
+        .then(book => {
+            document.getElementById('bookId').value = book._id;
+            document.getElementById('bookTitle').value = book.title;
+            document.getElementById('bookAuthor').value = book.author;
+            document.getElementById('bookDescription').value = book.description;
+            document.getElementById('bookGenre').value = book.genre;
+            document.getElementById('bookDepartment').value = book.department;
+            document.getElementById('bookCount').value = book.count;
+            document.getElementById('bookPublisher').value = book.publisher;
+        })
+        .catch(error => console.error('Error fetching book:', error));
+}
 
-                    if(book.count === 0){
-                        
-                        fetch('https://iit-dh-library.onrender.com/out_of_stock' ,{
-                            method: 'POST',
-                            headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                            body: JSON.stringify(book),
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Success:', data);
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                        });
+// Remove a book
+function removeBook(bookId) {
+    fetch(`http://127.0.0.1:5000/books/${bookId}`, {
+        method: 'DELETE',
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+        loadBooks();
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
 
-                    }
-                    
+// Handle out of stock books
+function add_ofs_books() {
+    fetch('http://127.0.0.1:5000/books')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(function(book) {
+                if (book.count === 0) {
+                    fetch('http://127.0.0.1:5000/out_of_stock', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(book),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching books:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    add_ofs_books();
+    loadBooks();
+});
+
+// Load out of stock books
+function load_ofs_books() {
+    fetch('http://127.0.0.1:5000/load_out_of_stock_books')
+        .then(response => response.json())
+        .then(data => {
+            const requestList = document.getElementById('outOfStockBooksList');
+            requestList.innerHTML = '';
+
+            if (data.length === 0) {
+                const noRequestMessage = document.createElement('li');
+                noRequestMessage.className = 'list-group-item';
+                noRequestMessage.textContent = 'All the books are in stock :)';
+                requestList.appendChild(noRequestMessage);
+            } else {
+                data.forEach(req => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item d-flex justify-content-left align-items-left';
+                    const requestInfo = document.createElement('div');
+                    requestInfo.innerHTML = `<strong>Book:</strong> ${req.title} | <strong>Authors:</strong> ${req.author}`;
+                    listItem.appendChild(requestInfo);
+                    requestList.appendChild(listItem);
                 });
+            }
+        })
+        .catch(error => console.error('Error fetching out of stock books:', error));
+}
 
-            })
+document.addEventListener('DOMContentLoaded', function () {
+    load_ofs_books();
+});
+
+// Search books
+document.getElementById('searchBar').addEventListener('input', function () {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#booksTableBody tr');
+    rows.forEach(row => {
+        const title = row.children[0].textContent.toLowerCase();
+        const author = row.children[1].textContent.toLowerCase();
+        const genre = row.children[2].textContent.toLowerCase();
+        if (title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
         }
+    });
+});
 
-        document.addEventListener('DOMContentLoaded', function () {
-            add_ofs_books();
-        });
-
-        function load_ofs_books() {
-            fetch('https://iit-dh-library.onrender.com/load_out_of_stock_books')
-                .then(response => response.json())
-                .then(data => {
-                    // console.log("Data received from server:", data);  
-                    const requestList = document.getElementById('outOfStockBooksList');
-                    requestList.innerHTML = ''; 
-
-                    if (data.length === 0) {
-                        const noRequestMessage = document.createElement('li');
-                        noRequestMessage.className = 'list-group-item';
-                        noRequestMessage.textContent = 'All the books are in stock :)';
-                        requestList.appendChild(noRequestMessage);
-                    } else {
-                        data.forEach(req => {
-                            // console.log("Request object:", req); 
-                            const listItem = document.createElement('li');
-                            listItem.className = 'list-group-item d-flex justify-content-left align-items-left';
-
-                            const requestInfo = document.createElement('div');
-                            requestInfo.innerHTML = `<strong>Book:</strong> ${req.title} | <strong>Authors:</strong> ${req.author}`;
-
-                            listItem.appendChild(requestInfo);
-                            requestList.appendChild(listItem);
-                        });
-                    }
-                })
-                .catch(error => console.error('Error fetching issue requests:', error));
-        }
-
-
-        document.addEventListener('DOMContentLoaded', function () {
-            load_ofs_books();
-        });
 
 
         

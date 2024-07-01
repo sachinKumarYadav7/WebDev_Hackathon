@@ -295,3 +295,40 @@ def load_out_of_stock_books():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
+
+@app.route('/books', methods=['GET'])
+def get_books():
+    books = list(b.find())
+    for book in books:
+        book['_id'] = str(book['_id'])  # Convert ObjectId to string for JSON serialization
+    return jsonify(books)
+
+@app.route('/books/<book_id>', methods=['GET'])
+def get_book(book_id):
+    book = b.find_one({"_id": ObjectId(book_id)})
+    if book:
+        book['_id'] = str(book['_id'])  # Convert ObjectId to string for JSON serialization
+        return jsonify(book)
+    return jsonify({"error": "Book not found"}), 404
+
+@app.route('/books/<book_id>', methods=['PUT'])
+def update_book(book_id):
+    data = request.get_json()
+    b.update_one(
+        {"_id": ObjectId(book_id)},
+        {"$set": {
+            "title": data['title'],
+            "description": data['description'],
+            "author": data['author'],
+            "genre": data['genre'],
+            "department": data['department'],
+            "count": data['count'],
+            "publisher": data['publisher']
+        }}
+    )
+    return jsonify({"message": "Book updated"}), 200
+
+@app.route('/books/<book_id>', methods=['DELETE'])
+def delete_book(book_id):
+    b.delete_one({"_id": ObjectId(book_id)})
+    return jsonify({"message": "Book deleted"}), 200
