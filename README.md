@@ -59,7 +59,7 @@ To install and run this project locally, follow these steps:
 
 ## Live Demo
 
-The Website is live at: [https://iit-dh-library.onrender.com](https://iit-dh-library.onrender.com)
+The Website is live at: [Library Management System](https://iit-dh-library.onrender.com)
 
 ## Login Credentials
 
