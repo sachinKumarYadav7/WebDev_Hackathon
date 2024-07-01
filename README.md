@@ -1,12 +1,3 @@
-# WebDev Hackathon Project
-
-## Overview
-This project is a library management system developed for a Web Development Hackathon. The application allows users to browse, issue, and manage books.
-
-
-
-
-
 # IIT DH Library Management System
 
 Welcome to the IIT DH Library Management System! This project is designed to manage library operations including book issuing, returning, and tracking user activities.
@@ -16,15 +7,17 @@ Welcome to the IIT DH Library Management System! This project is designed to man
 - [About](#about)
 - [Features](#features)
 - [Installation](#installation)
-- [Live Demo](#demo)
+- [Live Demo](#live-demo)
+- [Login Credentials](#login-credentials)
   
 ## About
 
-- Welcome to the IIT DH Library Management System! This project is designed to manage library operations including book issuing, returning, and tracking user activities.
-- Technologies Used:
-    HTML, CSS, JavaScript (Frontend),
-    Flask (Backend), 
-    MongoDB (Database)
+This project is designed to manage library operations including book issuing, returning, and tracking user activities.
+
+- **Technologies Used:**
+  - Frontend: HTML, CSS, JavaScript
+  - Backend: Flask
+  - Database: MongoDB
   
 ## Features
 
@@ -35,34 +28,50 @@ Welcome to the IIT DH Library Management System! This project is designed to man
 - Out-of-stock book notifications
 - Email notifications for issued books
 
-
 ## Installation
+
 To install and run this project locally, follow these steps:
 
-- Clone the repository:
+1. Clone the repository:
 
-``` sh
-git clone https://github.com/sachinKumarYadav7/WebDev_Hackathon.git
-```
-- Create a virtual environment:
+    ```sh
+    git clone https://github.com/sachinKumarYadav7/WebDev_Hackathon.git
+    ```
 
-```sh
-python -m venv env
-source env/bin/activate  # On Windows, use `env\Scripts\activate`
-```
-- Install dependencies:
+2. Create a virtual environment:
 
-``` sh
-pip install -r requirements.txt
+    ```sh
+    python -m venv env
+    source env/bin/activate  # On Windows, use `env\Scripts\activate`
+    ```
 
-```
-- Start the application:
+3. Install dependencies:
 
-``` sh
-python app.py
-```
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+4. Start the application:
+
+    ```sh
+    python app.py
+    ```
 
 ## Live Demo
 
-The Website is live on : https://iit-dh-library.onrender.com
+The Website is live at: [https://iit-dh-library.onrender.com](https://iit-dh-library.onrender.com)
 
+## Login Credentials
+
+Use the following credentials to log in:
+
+**For Admin:**
+- Email: admin@gmail.com
+- Password: admin
+
+**For Users:**
+- Email: 220020045@iitdh.ac.in
+- Password: pass
+
+- Email: 220010052@iitdh.ac.in
+- Password: pa
