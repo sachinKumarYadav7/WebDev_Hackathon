@@ -68,6 +68,7 @@
             backface-visibility: hidden; 
             /* will-change: transform, opacity;  */
         }
+      
         #loading {
             position: fixed;
             width: 100%;
@@ -79,6 +80,9 @@
             align-items: center;
             z-index: 9999;
             backdrop-filter: blur(5px);
+        }
+        #show_rem:hover{
+            cursor: pointer;
         }
 
     </style>
@@ -210,6 +214,7 @@
                 <!-- Cards will be inserted here -->
             </div>
         </div>
+
         <div class="modal fade" id="issueModal" tabindex="-1" role="dialog" aria-labelledby="issueModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -228,6 +233,23 @@
                         <button type="submit" class="btn btn-primary" id="cissue">Confirm Issue</button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="show_rem" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">All your Issued Books</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div id="rem_body" class="modal-body">
+
+                </div>
+                
+              </div>
             </div>
         </div>
 
@@ -254,7 +276,7 @@
                         if(book.count === 0){
                             console.log(book);
                             card = `
-                                <div class="col-md-4">
+                                <div class="col-md-4" >
                                     <div class="carda">
                                         <div class="card-body">
                                             <h5 class="card-title">${truncatedTitle}</h5>
@@ -643,6 +665,9 @@
                     .then(data => {
                         const rem = document.getElementById('rem');
                         rem.innerHTML = '';
+                        const remBody = document.getElementById('rem_body');
+                        remBody.innerHTML = '';
+
                         if (data.length === 0) {
                             const notfound = `<div class="notfound">
                                                 <p>You don't have any issued books!</p>
@@ -681,7 +706,59 @@
                                         </div>
                                     `;
                                     rem.insertAdjacentHTML('beforeend', card);
-                            });
+
+                            
+                                
+                                });
+
+                                fetch('https://iit-dh-library.onrender.com/load_acc_by_user')
+                                .then(response => response.json())
+                                .then(data => {
+                                    const rembody = document.getElementById('rem_body');
+                                    rembody.innerHTML = '';
+
+                                    if(data.length == 0){
+                                        rembody.textContent = "No books issued.";
+                                    }
+                                    else{
+                                        data.forEach(book => {
+                                            const truncatedTitle = book.req.bookname ? 
+                                            (book.req.bookname.length > 40 ? book.req.bookname.substring(0, 40) + '...' : book.req.bookname) : 
+                                            'No title available';
+
+                                            const bookTimestamp = new Date(book.req.timestamp);
+                                            const now = new Date();
+
+                                            const bookDueDate = new Date(bookTimestamp.getTime() + 15 * 24 * 60 * 60 * 1000);
+
+                                            const timeDiff = Math.abs(bookDueDate - now);
+
+                                            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                                            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                                            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                                            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                                            const formattedDueDate = bookDueDate.toLocaleDateString('en-US', options);
+                                            const li = document.createElement('li');
+                                            li.className = 'list-group-item';
+                    
+                                            li.innerHTML = `
+                                                <strong>Book</strong>: ${truncatedTitle} <br>
+                                                <strong>Deadline</strong>: ${formattedDueDate} <br>
+                                                <strong>Time remaining</strong>: ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds
+                                            `;
+                                            rembody.appendChild(li);
+                                        });
+                                    }
+                                });
+                                
+                                document.getElementById('rem').addEventListener('click', function() {
+                                    $('#show_rem').modal('show');
+                                });
+
+
+
 
                             const cards = document.querySelectorAll('.card');
                             let currentIndex = 0;
