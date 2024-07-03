@@ -723,6 +723,64 @@
         });
 
 
+        let abt_to_go_ofs = [];
+        let book_count = [];
+        function load_abt_to_go_ofs_books(){
+            fetch('https://iit-dh-library.onrender.com/books')
+            .then(response => response.json())
+            .then(data => {
+            
+                if (data.length === 0) {
+                    booksContainer.append('<p>No books available.</p>');
+                } else {
+                    let i = 0;
+                    data.forEach(function(book) {
+                        const truncatedTitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
+                        if(book.count <= 5 && book.count != 0){
+                            abt_to_go_ofs[i] = truncatedTitle;
+                            book_count[i] = book.count;
+                            i++;
+                        }
+                    });
+                    console.log(`i = ${i}`);
+                }
+                init_ofs_charts();
+            })
+        }
+
+        function init_ofs_charts() {
+
+            new Chart(document.getElementById('aboutToGetOutOfStockBooksChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: abt_to_go_ofs,
+                        datasets: [{
+                            label: 'Books About to Get Out of Stock',
+                            data: book_count,
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1,
+                            fill: false,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            load_abt_to_go_ofs_books();
+        });
+
+
         document.getElementById('add_book').addEventListener('click', function (e) {
             e.preventDefault();
             const booktitle = document.getElementById('bookTitle').value;
@@ -867,136 +925,21 @@
             load_ofs_books();
         });
 
-        function load_user_near_deadline() {
-            fetch('https://iit-dh-library.onrender.com/loadaccbooks')
-                .then(response => response.json())
-                .then(data => {
-
-                    const near_deadline = document.getElementById('load_user_near_deadline');
-                    near_deadline.innerHTML = ''; 
-
-                    // total_issued_books = data.length;
-                    // borrowedBooksData = [40, 10, 30, 20, total_issued_books];
-                    
-
-                    if (data.length === 0) {
-                        const noRequestMessage = document.createElement('li');
-                        noRequestMessage.className = 'list-group-item';
-                        noRequestMessage.textContent = 'No issue requests accepted.';
-                        requestList.appendChild(noRequestMessage);
-                    } else {
-                        data.forEach(req => {
-                            // console.log("Request object:", req); 
-                            const listItem = document.createElement('li');
-                            listItem.className = 'list-group-item d-flex justify-content-left align-items-left';
-
-                            const requestInfo = document.createElement('div');
-                            const utcDate = new Date(req.timestamp);
-                            const istDate = new Date(utcDate.getTime() + (330 * 60000)); 
-                            const formattedDate = istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-
-                            const currentDate = new Date();
-                            const timeDifference = currentDate - istDate;
-                            const daysPassed = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-                            
-                            requestInfo.innerHTML = `<strong>Name:</strong> ${req.req.Name} | <strong>Email:</strong> ${req.req.email} |  <strong>Book Issued:</strong> ${req.req.bookname} | <strong>Issue Time: </strong> ${formattedDate} | <strong> Days passed: </strong> ${daysPassed}`;
-                            
-                            listItem.appendChild(requestInfo);
-                            near_deadline.appendChild(listItem);
-                        });
-                    }
-                    initCharts();
-                })
-                .catch(error => console.error('Error fetching issue requests:', error));
-        }
-
-        // setTimeout(() => {
-            // borrowedBooksData = [40, 10, 30, 20, total_issued_books];
-  
+        
+     
             
-            const aboutToGetOutOfStockBooksData = [1, 1, 2, 3, 3];
-            const genreBooksData = [30, 20, 25, 15, 10];
-            const borrowedReturnedData = [5, 20, 5, 55, 20]; // Monthly returned data from Jan to May
+        const aboutToGetOutOfStockBooksData = [1, 1, 2, 3, 3];
+        const genreBooksData = [30, 20, 25, 15, 10];
+        const borrowedReturnedData = [5, 20, 5, 55, 20]; // Monthly returned data from Jan to May
 
            
-        // }, 1500);
+   
             
 
             // Initialize the charts
             document.addEventListener('DOMContentLoaded', function () {
               
                 
-                // console.log("Total issued books in func:", borrowedBooksData);
-
-                // new Chart(document.getElementById('borrowedBooksChart'), {
-                //     type: 'bar',
-                //     data: {
-                //         labels: ['January', 'February', 'March', 'April', 'May'],
-                //         datasets: [{
-                //             label: 'Books Borrowed',
-                //             data: borrowedBooksData,
-                //             backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                //             borderColor: 'rgba(75, 192, 192, 1)',
-                //             borderWidth: 1
-                //         }]
-                //     },
-                //     options: {
-                //         responsive: true,
-                //         scales: {
-                //             y: {
-                //                 beginAtZero: true
-                //             }
-                //         }
-                //     }
-                // });
-
-                // new Chart(document.getElementById('overdueBooksChart'), {
-                //     type: 'bar',
-                //     data: {
-                //         labels: ['January', 'February', 'March', 'April', 'May'],
-                //         datasets: [{
-                //             label: 'Books Overdue',
-                //             data: overdueBooksData,
-                //             backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                //             borderColor: 'rgba(255, 99, 132, 1)',
-                //             borderWidth: 1
-                //         }]
-                //     },
-                //     options: {
-                //         responsive: true,
-                //         scales: {
-                //             y: {
-                //                 beginAtZero: true
-                //             }
-                //         }
-                //     }
-                // });
-
-                new Chart(document.getElementById('aboutToGetOutOfStockBooksChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: ['Book1', 'Book2', 'Book3', 'Book4', 'Book5'],
-                        datasets: [{
-                            label: 'Books About to Get Out of Stock',
-                            data: aboutToGetOutOfStockBooksData,
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            borderWidth: 1,
-                            fill: false,
-                            tension: 0.1
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-
                 new Chart(document.getElementById('genreBooksChart'), {
                     type: 'pie',
                     data: {

@@ -267,11 +267,13 @@
                 if (data.length === 0) {
                     booksContainer.append('<p>No books available.</p>');
                 } else {
+                    // let genre_of_requested_book;
                     data.forEach(function(book) {
                         const truncatedTitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
                         const truncatedDesc = book.description ? (book.description.length > 100 ? book.description.substring(0, 100) + '...' : book.description) : 'No description available';
                     
                         let card;
+                        
 
                         if(book.count === 0){
                             console.log(book);
@@ -292,6 +294,7 @@
                             
                         }
                         else{
+                            // genre_of_requested_book = book.genre;
                             card = `
                             <div class="col-md-4">
                                 <div class="carda">
@@ -311,6 +314,7 @@
 
                     $('.issue-btn').click(function() {
                         const bookTitle = $(this).data('title');
+
                         $('#modalContent').text(`Do you want to issue the book: ${bookTitle}?`);
                         $('#issueModal').modal('show');
                         $('#bookname').data('title', bookTitle); 
