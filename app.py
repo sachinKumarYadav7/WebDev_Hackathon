@@ -206,6 +206,7 @@ def get_acc_by_user():
     email = user.get('email')
     acc_by_user = acc.accepted.find({"req.email": email}).sort("req.timestamp", -1)
     return dumps(acc_by_user), 200
+
     
 @app.route('/search' , methods = ['POST'])
 def search():
