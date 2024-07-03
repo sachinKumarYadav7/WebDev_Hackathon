@@ -84,6 +84,29 @@
         #show_rem:hover{
             cursor: pointer;
         }
+        .advertisements {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 230px;
+        }
+
+        .advertisement {
+            position: absolute;
+            width: 100%;
+            height: 500px;
+            top: 0;
+            left: 100%;
+            transition: transform 1s ease-in-out;
+            opacity: 0;
+        }
+
+        .advertisement.active {
+            transform: translateX(-100%);
+            opacity: 1;
+        }
+
+
 
     </style>
 </head>
@@ -258,6 +281,24 @@
     
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const advertisements = document.querySelectorAll('.advertisement');
+            let currentAdIndex = 0;
+
+            function showNextAd() {
+                advertisements[currentAdIndex].classList.remove('active');
+                currentAdIndex = (currentAdIndex + 1) % advertisements.length;
+                advertisements[currentAdIndex].classList.add('active');
+            }
+
+            // Initial display
+            advertisements[currentAdIndex].classList.add('active');
+
+            // Change advertisement every 5 seconds
+            setInterval(showNextAd, 5000);
+        });
+
 
         function load_all_books(){
             fetch('https://iit-dh-library.onrender.com/books')
