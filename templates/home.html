@@ -253,7 +253,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <p id="bookname"></p>
-                        <button type="submit" class="btn btn-primary" id="cissue">Confirm Issue</button>
+                        <button type="submit" class="btn btn-primary" id="cissue" data-genre="Some Genre">Confirm Issue</button>
                     </div>
                 </div>
             </div>
@@ -299,7 +299,7 @@
             setInterval(showNextAd, 5000);
         });
 
-
+        let genre_for_issreq;
         function load_all_books(){
             fetch('https://iit-dh-library.onrender.com/books')
             .then(response => response.json())
@@ -344,7 +344,7 @@
                                         <p class="card-text">Author: ${book.author}</p>
                                         <p class="card-text">Description: ${truncatedDesc}</p>
                                         <p class="card-text">Count: ${book.count}</p>
-                                        <a href="#" class="btn btn-primary issue-btn" data-title="${book.title}">Issue</a>
+                                        <a href="#" class="btn btn-primary issue-btn" data-title="${book.title}" data-genre="${book.genre}">Issue</a>
                                     </div>
                                 </div>
                             </div>
@@ -355,7 +355,9 @@
 
                     $('.issue-btn').click(function() {
                         const bookTitle = $(this).data('title');
+                        genre_for_issreq = $(this).data('genre');
 
+                        console.log(`gen = ${genre_for_issreq}`);
                         $('#modalContent').text(`Do you want to issue the book: ${bookTitle}?`);
                         $('#issueModal').modal('show');
                         $('#bookname').data('title', bookTitle); 
@@ -364,7 +366,9 @@
 
                     $('#cissue').click(function() {
                         const bookTitle2 = $(this).data('title');
-                        console.log(`${bookTitle2}`);
+                        const genre = $(this).data('genre');
+                        // console.log(`${bookTitle2}`);
+                        // console.log(`gen = ${genre}`);
                     });
                 }
             })
@@ -433,7 +437,7 @@
                 headers:{
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ bookname: bookTitle.trim() }),
+                body: JSON.stringify({ bookname: bookTitle.trim() , genre: genre_for_issreq}),
             })
             .then(response => response.json())
             .then(data => {
@@ -560,7 +564,7 @@
                                             <p class="card-text">Author: ${book.author}</p>
                                             <p class="card-text">Description: ${truncatedDesc}</p>
                                             <p class="card-text">Count: ${book.count}</p>
-                                            <a href="#" class="btn btn-primary issue-btn" data-title="${book.title}">Issue</a>
+                                            <a href="#" class="btn btn-primary issue-btn" data-title="${book.title}" data-genre="${book.genre}">Issue</a>
                                         </div>
                                     </div>
                                 </div>
@@ -572,6 +576,8 @@
                     }
                     $('.issue-btn').click(function() {
                         const bookTitle = $(this).data('title');
+                        genre_for_issreq = $(this).data('genre');
+
                         $('#modalContent').text(`Do you want to issue the book: ${bookTitle}?`);
                         $('#issueModal').modal('show');
                         $('#bookname').data('title', bookTitle); 
@@ -666,7 +672,7 @@
                                             <p class="card-text">Author: ${book.author}</p>
                                             <p class="card-text">Description: ${truncatedDesc}</p>
                                             <p class="card-text">Count: ${book.count}</p>
-                                            <a href="#" class="btn btn-primary issue-btn" data-title="${book.title}">Issue</a>
+                                            <a href="#" class="btn btn-primary issue-btn" data-title="${book.title}" data-genre="${book.genre}">Issue</a>
                                         </div>
                                     </div>
                                 </div>
@@ -679,6 +685,8 @@
                     document.querySelectorAll('.issue-btn').forEach(button => {
                         button.addEventListener('click', function() {
                             const bookTitle = this.getAttribute('data-title');
+                            genre_for_issreq = $(this).data('genre');
+
                             document.getElementById('modalContent').textContent = `Do you want to issue the book: ${bookTitle}?`;
                             document.getElementById('issueModal').dataset.title = bookTitle;
                             $('#issueModal').modal('show');
@@ -728,7 +736,7 @@
                                     const bookTimestamp = new Date(book.req.timestamp);
                                     const now = new Date();
 
-                                    const bookDueDate = new Date(bookTimestamp.getTime() + 15 * 24 * 60 * 60 * 1000);
+                                    const bookDueDate = new Date(bookTimestamp.getTime() + 7 * 24 * 60 * 60 * 1000);
 
                                     const timeDiff = Math.abs(bookDueDate - now);
 
@@ -774,7 +782,7 @@
                                             const bookTimestamp = new Date(book.req.timestamp);
                                             const now = new Date();
 
-                                            const bookDueDate = new Date(bookTimestamp.getTime() + 15 * 24 * 60 * 60 * 1000);
+                                            const bookDueDate = new Date(bookTimestamp.getTime() + 7 * 24 * 60 * 60 * 1000);
 
                                             const timeDiff = Math.abs(bookDueDate - now);
 

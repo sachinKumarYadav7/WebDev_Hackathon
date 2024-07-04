@@ -128,6 +128,7 @@ def add_issue_req():
         "Name" : user.get('name'),
         "email" : user.get('email'),
         "bookname" : data['bookname'],
+        "genre" : data['genre'],
         "timestamp": datetime.utcnow().isoformat()
     }
 

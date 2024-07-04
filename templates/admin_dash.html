@@ -471,7 +471,7 @@
                             const utcDate = new Date(req.timestamp);
                             const istDate = new Date(utcDate.getTime() + (330 * 60000)); 
                             const formattedDate = istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-                            requestInfo.innerHTML = `<strong>Name:</strong> ${req.Name} <br><strong>Email:</strong> ${req.email} <br><strong>Book Requested:</strong> ${req.bookname} <br><em>(${formattedDate})</em>`;
+                            requestInfo.innerHTML = `<strong>Name:</strong> ${req.Name} <br><strong>Email:</strong> ${req.email} <br><strong>Book Requested:</strong> ${req.bookname} <br><strong> Genre:</strong> ${req.genre} <br><em>(${formattedDate})</em>`;
 
                             const buttonGroup = document.createElement('div');
                             buttonGroup.className = 'btn-group';
@@ -596,6 +596,11 @@
         let past_deadline_books = 0;
         let near_deadline_books = 0;
         let borrowedBooksData = [];
+        let GenOfAccBooks = [];
+        let count_of_GenOfAccBooks = [];
+
+
+        let map = new Map();
 
         function loadallaccreqs() {
             fetch('https://iit-dh-library.onrender.com/loadaccbooks')
@@ -621,6 +626,7 @@
                         noRequestMessage.textContent = 'No issue requests accepted.';
                         accstudents.appendChild(noRequestMessage);
                     } else {
+                        let ind = 0;
                         data.forEach(req => {
                             // console.log("Request object:", req); 
                             const listItem = document.createElement('li');
@@ -652,12 +658,34 @@
                                 accstudents.appendChild(listItem);
 
                             }
+                            console.log(req.req.genre);
+                            if(map.has(req.req.genre)){
+                                map.set(req.req.genre, map.get(req.req.genre) + 1);
+                            }
+                            else{
+                                map.set(req.req.genre, 1);
+                            }
+                            
+
                         });
                     }
+                    map.forEach((value, key) => {
+                        count_of_GenOfAccBooks.push(key);
+                        GenOfAccBooks.push(value);
+                    });
+                    console.log("helloo");
+                    console.log(map.size);
+                    map.forEach((value, key) => {
+                        console.log(`${key}: ${value}`);
+                    });
                     initCharts();
                 })
                 .catch(error => console.error('Error fetching issue requests:', error));
         }
+
+        
+
+        
 
         function initCharts() {
             console.log("Total issued books (in initCharts):", total_issued_books); // Debugging: log the new value inside initCharts
@@ -715,6 +743,45 @@
                     }
                 }
             });
+
+            function getRandomColor() {
+                const letters = '0123456789ABCDEF';
+                let color = '#';
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            function generateRandomColors(numColors) {
+                const colors = [];
+                for (let i = 0; i < numColors; i++) {
+                    colors.push(getRandomColor());
+                }
+                return colors;
+            }
+            
+
+            // console.log(`map ka size : ${map.size}`);
+            const backgroundColors = generateRandomColors(count_of_GenOfAccBooks.length);
+            const borderColors = backgroundColors.map(color => color.replace('0.2', '1'));
+
+            new Chart(document.getElementById('genreBooksChart'), {
+                type: 'pie',
+                data: {
+                    labels: count_of_GenOfAccBooks,
+                    datasets: [{
+                        label: 'Books Borrowed by Genre',
+                        data: GenOfAccBooks,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
         }
 
 
@@ -742,7 +809,7 @@
                             i++;
                         }
                     });
-                    console.log(`i = ${i}`);
+                    // console.log(`i = ${i}`);
                 }
                 init_ofs_charts();
             })
@@ -940,34 +1007,7 @@
             document.addEventListener('DOMContentLoaded', function () {
               
                 
-                new Chart(document.getElementById('genreBooksChart'), {
-                    type: 'pie',
-                    data: {
-                        labels: ['AI/ML', 'Electrical', 'Computer Science', 'Mechanical', 'Programming'],
-                        datasets: [{
-                            label: 'Books Borrowed by Genre',
-                            data: genreBooksData,
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true
-                    }
-                });
+                
 
                 new Chart(document.getElementById('borrowedReturnedChart'), {
                     type: 'bar',
