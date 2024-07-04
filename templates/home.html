@@ -309,6 +309,7 @@
                     booksContainer.append('<p>No books available.</p>');
                 } else {
                     // let genre_of_requested_book;
+                    // console.log(data.length);
                     data.forEach(function(book) {
                         const truncatedTitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
                         const truncatedDesc = book.description ? (book.description.length > 100 ? book.description.substring(0, 100) + '...' : book.description) : 'No description available';

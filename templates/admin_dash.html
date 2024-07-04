@@ -316,10 +316,30 @@
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary" id="add_book">Add Book</button>
+                                    <!-- <button type="submit" class="btn btn-primary" id="update_book">Update Book</button> -->
+                                    <input type="hidden" id="editBookId">
                                     <!-- <button type="button" class="btn btn-danger" onclick="removeBook()">Remove Book</button> -->
                                 </form>
                             </div>
                         </div>
+
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Search Books</h5>
+                                <input type="text" class="form-control" id="searchBar" placeholder="Search for books...">
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Books List</h5>
+                                <p id="bookCountDisplay">Total Books: 0</p>
+                                <ul id="booksList" class="list-group">
+                                    <!-- List of books will be dynamically inserted here -->
+                                </ul>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div id="requestedBooks" class="section" style="display: none;">
@@ -372,7 +392,147 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+
         
+
+        function loadBooks() {
+            fetch('https://iit-dh-library.onrender.com/books')
+            .then(response => response.json())
+            .then(data => {
+                const booksList = document.getElementById('booksList');
+                booksList.innerHTML = '';
+                document.getElementById('bookCountDisplay').textContent = `Total Books: ${data.length}`;
+
+                data.forEach(book => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    listItem.innerHTML = `
+                        <div>
+                            <strong>${book.title}</strong> by ${book.author}
+                            <p>${book.description}</p>
+                            <p>Genre: ${book.genre} |  Department: ${book.department} |  Publisher: ${book.publisher}</p>
+                            <p>Count: ${book.count}</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary btn-sm" onclick='editBook(${JSON.stringify(book)})'>Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick='removeBook("${book._id}")'>Remove</button>
+                        </div>
+                    `;
+                    booksList.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadBooks();
+        });
+
+        function editBook(book) {
+            document.getElementById('bookTitle').value = book.title || '';
+            document.getElementById('bookAuthor').value = book.author || '';
+            document.getElementById('bookdesc').value = book.description || '';
+            document.getElementById('bookgen').value = book.genre || '';
+            document.getElementById('bookdept').value = book.department || '';
+            document.getElementById('bookcount').value = book.count || 0;
+            document.getElementById('bookpub').value = book.publisher || '';
+
+            document.getElementById('editBookId').value = book._id;
+
+            document.getElementById('add_book').innerText = 'Update Book';
+            // document.getElementById('update_book').style.display = 'block';
+
+            window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+            });
+
+            // updateBook(book);
+
+        }
+
+        // function updateBook(bookId) {
+        //     showLoading();
+        //     console.log(bookId)
+        //     fetch(`https://iit-dh-library.onrender.com/update_book/${bookId}`, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify(book),
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         hideLoading();
+        //         showAlert('success', 'Book updated successfully');
+        //         document.getElementById('add_book').style.display = 'inline-block';
+        //         document.getElementById('update_book').style.display = 'none';
+        //         resetForm();
+        //         loadBooks();
+        //     })
+        //     .catch((error) => {
+        //         hideLoading();
+        //         console.error('Error:', error);
+        //     });
+        // }
+
+
+        function removeBook(bookId) {
+            showLoading();
+            fetch(`https://iit-dh-library.onrender.com/deletebook/${bookId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                hideLoading();
+                if (data.status === 'success') {
+                    showAlert('success', data.message);
+                    loadBooks(); 
+                } else {
+                    showAlert('error', data.message);
+                }
+            })
+            .catch((error) => {
+                hideLoading();
+                console.error('Error:', error);
+                showAlert('error', error.message);
+            });
+        }
+
+
+        function showAlert(type, message) {
+            const alert = document.getElementById(type === 'success' ? 'success' : 'delete');
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 6000);
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function resetForm() {
+            document.getElementById('manageBooksForm').reset();
+            document.getElementById('editBookId').value = '';
+        }
+
         function showSection(sectionId) {
             document.querySelectorAll('.section').forEach(section => {
                 section.style.display = 'none';
@@ -565,7 +725,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('Delete success:', data);
-                    loadAllIssueReqs();  // Reload the list after deletion
+                    loadAllIssueReqs();  
                     if(check == 1){
                         $('#issueModal').modal('hide');
 
@@ -669,15 +829,26 @@
 
                         });
                     }
-                    map.forEach((value, key) => {
-                        count_of_GenOfAccBooks.push(key);
-                        GenOfAccBooks.push(value);
-                    });
-                    console.log("helloo");
-                    console.log(map.size);
-                    map.forEach((value, key) => {
-                        console.log(`${key}: ${value}`);
-                    });
+
+                    function sorts_keys(a, b) {
+                        return b[1] - a[1];
+                    }
+
+                    const map_array = Array.from(map);
+                    map_array.sort(sorts_keys);
+
+                    map_array.sort((a, b) => b[1] - a[1]);
+
+                    let top = 7;
+                    for (let i = 0; i < top; i++) {
+                        count_of_GenOfAccBooks.push(map_array[i][0]); 
+                        GenOfAccBooks.push(map_array[i][1]); 
+                    }
+
+                    // map2.forEach((value, key) => {
+                    //     count_of_GenOfAccBooks.push(key);
+                    //     GenOfAccBooks.push(value);
+                    // });
                     initCharts();
                 })
                 .catch(error => console.error('Error fetching issue requests:', error));
@@ -858,6 +1029,8 @@
             const bookcount = document.getElementById('bookcount').value;
             const bookpub = document.getElementById('bookpub').value;
             var loading = document.getElementById("loading");
+
+            const bookId = document.getElementById('editBookId').value;
             
             if(booktitle.length === 0){
                 const alert = document.getElementById('delete');
@@ -869,6 +1042,7 @@
             }
 
             if(booktitle.length != 0){
+
                 loading.style.display = "block";
                 loading.style.position = "fixed";
                 loading.style.width = "100%";
@@ -882,40 +1056,89 @@
                 loading.style.backdropFilter = "blur(5px)";
 
 
+                if (bookId) {
+                    // console.log(bookId);
 
-            fetch('https://iit-dh-library.onrender.com/add_new_book', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ bt: booktitle , ba: bookauth , bdesc: bookdesc , bg: bookgenre, bdept: bookdept, bc: bookcount, bp: bookpub }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                
-                console.log('Success:', data);
-                const alert = document.getElementById('success');
-                document.getElementById('bookTitle').value  = '';
-                document.getElementById('bookAuthor').value  = '';
-                document.getElementById('bookdesc').value  = '';
-                document.getElementById('bookgen').value  = '';
-                document.getElementById('bookdept').value  = '';
-                document.getElementById('bookcount').value  = '';
-                document.getElementById('bookpub').value  = '';
+                    // ****** this will Update book *******
 
-                alert.textContent = `Success! Book Added Succesfully : ${booktitle} by ${bookauth}`;
-                alert.style.display = 'block';
-                
-                setTimeout(() => {
-                    alert.style.display = 'none';
-                }, 6000); 
-                loading.style.display = "none"; 
-            })
-            
-            
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+                    fetch(`https://iit-dh-library.onrender.com/update_book/${bookId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ bt: booktitle , ba: bookauth , bdesc: bookdesc , bg: bookgenre, bdept: bookdept, bc: bookcount, bp: bookpub }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        
+                        console.log('Success:', data);
+                        const alert = document.getElementById('success');
+                        document.getElementById('bookTitle').value  = '';
+                        document.getElementById('bookAuthor').value  = '';
+                        document.getElementById('bookdesc').value  = '';
+                        document.getElementById('bookgen').value  = '';
+                        document.getElementById('bookdept').value  = '';
+                        document.getElementById('bookcount').value  = '';
+                        document.getElementById('bookpub').value  = '';
+    
+                        document.getElementById('add_book').innerText = 'Add Book';
+
+                        alert.textContent = `Success! Book Updated Succesfully : ${booktitle} by ${bookauth}`;
+                        alert.style.display = 'block';
+
+                        document.getElementById('editBookId').value = '';
+                        // console.log(`after updating : ${document.getElementById('editBookId').value}`);
+
+                        loadBooks();
+                        
+                        setTimeout(() => {
+                            alert.style.display = 'none';
+                        }, 6000); 
+                        loading.style.display = "none"; 
+                    })
+                    
+                    
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+
+
+                } else {
+                    // ****** this will add new book *******
+                    fetch('https://iit-dh-library.onrender.com/add_new_book', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ bt: booktitle , ba: bookauth , bdesc: bookdesc , bg: bookgenre, bdept: bookdept, bc: bookcount, bp: bookpub }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        
+                        console.log('Success:', data);
+                        const alert = document.getElementById('success');
+                        document.getElementById('bookTitle').value  = '';
+                        document.getElementById('bookAuthor').value  = '';
+                        document.getElementById('bookdesc').value  = '';
+                        document.getElementById('bookgen').value  = '';
+                        document.getElementById('bookdept').value  = '';
+                        document.getElementById('bookcount').value  = '';
+                        document.getElementById('bookpub').value  = '';
+    
+                        alert.textContent = `Success! Book Added Succesfully : ${booktitle} by ${bookauth}`;
+                        alert.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            alert.style.display = 'none';
+                        }, 6000); 
+                        loading.style.display = "none"; 
+                    })
+                    
+                    
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                }
             }
         });
 

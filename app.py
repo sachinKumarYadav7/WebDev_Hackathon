@@ -2,7 +2,7 @@ from flask import Flask, render_template, session, redirect, request, jsonify,ur
 from functools import wraps
 import os
 from pymongo import MongoClient
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import logging
 from flask import Flask, request, jsonify
 # from flask_pymongo import PyMongo
@@ -154,7 +154,50 @@ def delete_entry(entry_id):
         return jsonify({'status': 'success', 'message': 'Entry deleted successfully'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
+    
+@app.route('/deletebook/<book_id>', methods=['POST', 'OPTIONS'])
+@cross_origin()
+def delete_book(book_id):
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        }
+        return '', 200, headers
+    
+    try:
+        allb.books2.delete_one({'_id': ObjectId(book_id)})
+        return jsonify({'status': 'success', 'message': 'Book deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+    
+@app.route('/update_book/<book_id>', methods=['POST'])
+def update_book(book_id):
+    try:
+        data = request.get_json()
 
+        update_fields = {
+            'title': data['bt'],
+            'author': data['ba'],
+            'description': data['bdesc'],
+            'genre': data['bg'],
+            'department': data['bdept'],
+            'count': data['bc'],
+            'publisher': data['bp']
+        }
+        
+        result = allb.books2.update_one(
+            {'_id': ObjectId(book_id)},
+            {'$set': update_fields}
+        )
+        
+        if result.matched_count == 0:
+            return jsonify({'status': 'error', 'message': 'Book not found'}), 404
+
+        return jsonify({'status': 'success', 'message': 'Book updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
 
 @app.route('/accepted' ,methods=['POST'])
 def add_to_accepted():
