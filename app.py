@@ -13,6 +13,119 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib
 
+# from Recommender_System.recommender import (
+#     get_content_based_recommendations, 
+#     get_collaborative_filtering_recommendations,
+#     get_hybrid_recommendations,
+#     cosine_sim,
+#     books
+# )
+
+import pandas as pd
+import numpy as np
+from scipy.sparse.linalg import svds
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel, cosine_similarity
+
+
+app = Flask(__name__)
+CORS(app)
+
+app.secret_key = "your_secret_key"  # Add a secret key for session management
+
+
+
+#Recommendation system
+
+logging.basicConfig(level=logging.DEBUG)
+
+# Load your data here
+books = pd.read_json('./Recommender_System/UpdatedDatasetSOI .json')
+books['book_id'] = range(1, len(books) + 1)
+books['book_id'] = books['book_id'].apply(lambda x: str(x).zfill(6)).astype(int)
+user_interactions = pd.read_json('./Recommender_System/user_ratings.json')
+
+# Precompute the cosine similarity matrix for content-based filtering
+books['combined_features'] = books['title'] + ' ' + books['description'] + ' ' + books['author'] + ' ' + books['genre'] + ' ' + books['department']
+tfidf = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf.fit_transform(books['combined_features'])
+cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+
+# Collaborative Filtering Setup
+user_book_ratings = user_interactions.pivot(index='user_id', columns='book_id', values='rating').fillna(0)
+R = user_book_ratings.values
+user_ratings_mean = np.mean(R, axis=1)
+R_demeaned = R - user_ratings_mean.reshape(-1, 1)
+
+# Determine the appropriate value of k based on the shape of R_demeaned
+num_users, num_books = R_demeaned.shape
+k = min(num_users, num_books) - 1  # Set k to be less than the smaller dimension
+
+# Perform matrix factorization with the adjusted value of k
+U, sigma, Vt = svds(R_demeaned, k=k)
+sigma = np.diag(sigma)
+predicted_ratings = np.dot(np.dot(U, sigma), Vt) + user_ratings_mean.reshape(-1, 1)
+predicted_ratings_books = pd.DataFrame(predicted_ratings, columns=user_book_ratings.columns)
+
+# Define recommendation functions
+def get_content_based_recommendations(title, cosine_sim=cosine_sim):
+    try:
+        idx = books[books['title'] == title].index[0]
+        sim_scores = list(enumerate(cosine_sim[idx]))
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        sim_scores = sim_scores[1:3]
+        book_indices = [i[0] for i in sim_scores]
+        return books.iloc[book_indices][['title', 'author', 'genre']]
+    except IndexError:
+        logging.error(f"Title '{title}' not found in books dataset")
+        return pd.DataFrame(columns=['title', 'author', 'genre'])
+
+def get_collaborative_filtering_recommendations(user_id, num_recommendations=3):
+    try:
+        user_idx = user_id - 1
+        user_ratings = predicted_ratings_books.iloc[user_idx]
+        sorted_indices = np.argsort(user_ratings)[::-1]
+        recommended_indices = sorted_indices[:num_recommendations]
+        return books[books['book_id'].isin(predicted_ratings_books.columns[recommended_indices])][['title', 'author', 'genre']]
+    except IndexError:
+        logging.error(f"User ID '{user_id}' not found in user interactions dataset")
+        return pd.DataFrame(columns=['title', 'author', 'genre'])
+
+def get_hybrid_recommendations(title, user_id, cosine_sim, num_recommendations=3):
+    content_based_recs = get_content_based_recommendations(title, cosine_sim)
+    collaborative_recs = get_collaborative_filtering_recommendations(user_id, num_recommendations)
+    combined_recs = pd.concat([content_based_recs, collaborative_recs]).drop_duplicates().head(num_recommendations)
+    return combined_recs
+
+@app.route('/recommend', methods=['GET'])
+def recommend():
+    try:
+        title = request.args.get('title')
+        user_id = int(request.args.get('user_id'))
+        num_recommendations = int(request.args.get('num_recommendations', 2))
+        
+        logging.debug(f"Received recommendation request for title: {title}, user_id: {user_id}, num_recommendations: {num_recommendations}")
+        
+        # Validate parameters
+        if title not in books['title'].values:
+            logging.error(f"Title '{title}' not found in books dataset")
+            return jsonify({"error": "Title not found"}), 404
+
+        if user_id not in user_interactions['user_id'].values:
+            logging.error(f"User ID '{user_id}' not found in user interactions dataset")
+            return jsonify({"error": "User ID not found"}), 404
+
+        recommendations = get_hybrid_recommendations(title, 1, cosine_sim, num_recommendations)
+        
+        logging.debug(f"Generated recommendations: {recommendations}")
+        
+        return recommendations.to_json(orient='records')
+    except Exception as e:
+        logging.error(f"Error in recommendation process: {e}")
+        return jsonify({"error": "Failed to generate recommendations"}), 500
+    
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -20,8 +133,9 @@ CORS(app)
 app.secret_key = "your_secret_key"  # Add a secret key for session management
 
 # Connect to MongoDB
-client = MongoClient("mongodb+srv://Samarth_7:Sam_mongo_atlas@iitdhcluster.a1gizlj.mongodb.net/?retryWrites=true&w=majority&appName=iitdhcluster")
-# client = MongoClient("mongodb://localhost:27017")
+# client = MongoClient("mongodb+srv://Samarth_7:Sam_mongo_atlas@iitdhcluster.a1gizlj.mongodb.net/?retryWrites=true&w=majority&appName=iitdhcluster")
+client = MongoClient("mongodb://localhost:27017")
+database = client['search_history_db']
 
 
 
@@ -39,6 +153,55 @@ acc = client.admi
 
 ofs = client.admi
 stock = ofs.out_of_stock
+
+# =========================================Search_History========================================================================================================
+@app.route('/search', methods=['POST'])
+def search():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 403
+
+    data = request.get_json()
+    query = data.get('query', '').strip()
+
+    if not query:
+        return jsonify({'message': 'Search query cannot be empty'}), 400
+
+    user_id = session['user']['email'][:-12:]
+
+    # Save search history to the database
+    new_search = {
+        'user_id': user_id,
+        'search_query': query,
+        'timestamp': datetime.utcnow()
+    }
+    database.search_history.insert_one(new_search)
+    app.logger.info('Search query recorded for user_id: %s', user_id)
+
+    # Perform the search
+    results = list(b.find({"title": {"$regex": query, "$options": "i"}}))
+
+    for book in results:
+        book['_id'] = str(book['_id'])
+
+    return jsonify(results)
+
+
+
+@app.route('/search-history', methods=['GET'])
+def get_search_history():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 403
+
+    user_id = session['user']['_id']
+    history = database.search_history.find({'user_id': user_id})
+
+    history_data = [{'search_query': record['search_query'], 'timestamp': record['timestamp']} for record in history]
+
+    return jsonify(history_data), 200
+
+
+# ===============================================================================================================================================================
+
 
 
 def login_required(f):
@@ -208,18 +371,18 @@ def get_acc_by_user():
     return dumps(acc_by_user), 200
 
     
-@app.route('/search' , methods = ['POST'])
-def search():
-    data = request.get_json()
-    query = data.get('query', '')
+# @app.route('/search' , methods = ['POST'])
+# def search():
+#     data = request.get_json()
+#     query = data.get('query', '')
 
-    results = list(b.find({"title": {"$regex": query, "$options": "i"}}))
+#     results = list(b.find({"title": {"$regex": query, "$options": "i"}}))
 
-    for book in results:
-        book['_id'] = str(book['_id'])
+#     for book in results:
+#         book['_id'] = str(book['_id'])
 
 
-    return jsonify(results)
+#     return jsonify(results)
 
 @app.route('/search_by_genre_and_dept', methods=['POST'])
 def searchbydeptngenre():

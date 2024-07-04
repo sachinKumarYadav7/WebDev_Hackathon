@@ -155,13 +155,46 @@
                             <!-- List of announcements will be dynamically inserted here -->
                     </div>
                 </div>
+    
+                
                 <div class="grid-item advertisement-board" id="ad">
                     <div class="advertisements">
-                        <div class="advertisement">You were looking for a Book in AI/ML, here are some</div>
+                        <!-- <div class="advertisement">You were looking for a Book in AI/ML, here are some</div>
                         <div class="advertisement">Other guys from your branch took this book, have a look</div>
-                        <div class="advertisement">See what other guys are studying of your same interest</div>
+                        <div class="advertisement">See what other guys are studying of your same interest</div> -->
+                        <!-- Placeholder for recommended books -->
+                        <div id="recommended-books" class="advertisement"></div>
                     </div>
                 </div>
+                
+                <script>
+                    document.addEventListener('DOMContentLoaded', (event) => {
+                        fetch('/recommend?title=Introduction to Algorithms&user_id=2&num_recommendations=3')  // Replace with dynamic title and user_id as needed
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                let booksDiv = document.getElementById('recommended-books');
+                                booksDiv.innerHTML = '';  // Clear any previous content
+                                data.forEach(book => {
+                                    let bookDiv = document.createElement('div');
+                                    bookDiv.classList.add('book');
+                                    bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
+                                    booksDiv.appendChild(bookDiv);
+                                });
+                            })
+                            .catch(error => {
+                                console.error('There was a problem with the fetch operation:', error);
+                                let booksDiv = document.getElementById('recommended-books');
+                                booksDiv.innerHTML = 'Failed to load recommendations.';
+                            });
+                    });
+                </script>
+
+
                 <div class="grid-item" >
                     <h5>Pending Issue Requests</h5>
                     <ul id="issuelist" class="list-group mt-4">
