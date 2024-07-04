@@ -33,20 +33,32 @@ CORS(app)
 
 app.secret_key = "your_secret_key"  # Add a secret key for session management
 
+# Database connection
+
+# Connect to MongoDB
+# client = MongoClient("mongodb+srv://Samarth_7:Sam_mongo_atlas@iitdhcluster.a1gizlj.mongodb.net/?retryWrites=true&w=majority&appName=iitdhcluster")
+client = MongoClient("mongodb://localhost:27017")
 
 
-#Recommendation system
+# ===================================================================================================================================================================
 
-logging.basicConfig(level=logging.DEBUG)
+# Accessing the book from database
+books_collection = client['all_books']['books2']
+user_interactions_collection = client['all_books']['user_rating']
 
 # Load your data here
-books = pd.read_json('./Recommender_System/UpdatedDatasetSOI .json')
+books = pd.DataFrame(list(books_collection.find()))
 books['book_id'] = range(1, len(books) + 1)
 books['book_id'] = books['book_id'].apply(lambda x: str(x).zfill(6)).astype(int)
-user_interactions = pd.read_json('./Recommender_System/user_ratings.json')
+user_interactions = pd.DataFrame(list(user_interactions_collection.find()))
 
-# Precompute the cosine similarity matrix for content-based filtering
-books['combined_features'] = books['title'] + ' ' + books['description'] + ' ' + books['author'] + ' ' + books['genre'] + ' ' + books['department']
+# Ensure all entries in combined_features are strings
+books['combined_features'] = (books['title'].fillna('') + ' ' + 
+                              books['description'].fillna('') + ' ' + 
+                              books['author'].fillna('') + ' ' + 
+                              books['genre'].fillna('') + ' ' + 
+                              books['department'].fillna(''))
+
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(books['combined_features'])
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
@@ -101,7 +113,9 @@ def get_hybrid_recommendations(title, user_id, cosine_sim, num_recommendations=3
 def recommend():
     try:
         title = request.args.get('title')
+        print("\n\n", title,"\n\n")
         user_id = int(request.args.get('user_id'))
+        print("\n\n", user_id,"\n\n")
         num_recommendations = int(request.args.get('num_recommendations', 2))
         
         logging.debug(f"Received recommendation request for title: {title}, user_id: {user_id}, num_recommendations: {num_recommendations}")
@@ -115,46 +129,23 @@ def recommend():
             logging.error(f"User ID '{user_id}' not found in user interactions dataset")
             return jsonify({"error": "User ID not found"}), 404
 
-        recommendations = get_hybrid_recommendations(title, 1, cosine_sim, num_recommendations)
+        recommendations = get_hybrid_recommendations(title, user_id, cosine_sim, num_recommendations)
         
         logging.debug(f"Generated recommendations: {recommendations}")
         
         return recommendations.to_json(orient='records')
     except Exception as e:
         logging.error(f"Error in recommendation process: {e}")
-        return jsonify({"error": "Failed to generate recommendations"}), 500
-    
+        return jsonify({"error": f"Failed to generate recommendations: {str(e)}"}), 500
+
+
+# ====================================================================================================================================================================
 
 
 
-app = Flask(__name__)
-CORS(app)
-
-app.secret_key = "your_secret_key"  # Add a secret key for session management
-
-# Connect to MongoDB
-# client = MongoClient("mongodb+srv://Samarth_7:Sam_mongo_atlas@iitdhcluster.a1gizlj.mongodb.net/?retryWrites=true&w=majority&appName=iitdhcluster")
-client = MongoClient("mongodb://localhost:27017")
-database = client['search_history_db']
-
-
-
-db = client.admi 
-users_collection = db.user_login  
-
-allb = client.all_books 
-b = allb.books2  
-
-announce = client.admi
-announcements = announce.announcements
-
-issue = client.admi
-acc = client.admi
-
-ofs = client.admi
-stock = ofs.out_of_stock
 
 # =========================================Search_History========================================================================================================
+database = client['search_history_db']
 @app.route('/search', methods=['POST'])
 def search():
     if 'user' not in session:
@@ -201,6 +192,21 @@ def get_search_history():
 
 
 # ===============================================================================================================================================================
+
+db = client.admi 
+users_collection = db.user_login  
+
+allb = client.all_books 
+b = allb.books2  
+
+announce = client.admi
+announcements = announce.announcements
+
+issue = client.admi
+acc = client.admi
+
+ofs = client.admi
+stock = ofs.out_of_stock
 
 
 
