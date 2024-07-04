@@ -10,6 +10,33 @@
         body {
             background-color: #f8f9fa;
         }
+
+
+        body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.navbar.dark-mode {
+    background-color: #333;
+    box-shadow: 0px 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+.navbar-dark .nav-link.dark-mode {
+    color: #bdbdbd !important;
+}
+
+.card.dark-mode {
+    background-color: #424242;
+    color: #e0e0e0;
+}
+
+.advertisement.dark-mode {
+    background-color: #424242;
+    color: #e0e0e0;
+}
+
+
         .navbar {
             background-color: #6a1b9a;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -264,21 +291,43 @@ document.addEventListener('DOMContentLoaded', function () {
     const modeToggle = document.getElementById('mode');
     const body = document.body;
 
+    // Function to enable dark mode
+    function enableDarkMode() {
+        body.classList.add('dark-mode');
+        document.querySelectorAll('.navbar').forEach(nav => nav.classList.add('dark-mode'));
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.add('dark-mode'));
+        document.querySelectorAll('.card').forEach(card => card.classList.add('dark-mode'));
+        document.querySelectorAll('.advertisement').forEach(ad => ad.classList.add('dark-mode'));
+        document.getElementById('imgmode').src = '../static/images/moon.png'; // Change to moon icon or any dark mode icon
+    }
+
     // Function to disable dark mode
     function disableDarkMode() {
         body.classList.remove('dark-mode');
-        // Ensure the icon shows the correct mode
-        document.getElementById('imgmode').src = '../static/images/sun.png'; 
+        document.querySelectorAll('.navbar').forEach(nav => nav.classList.remove('dark-mode'));
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('dark-mode'));
+        document.querySelectorAll('.card').forEach(card => card.classList.remove('dark-mode'));
+        document.querySelectorAll('.advertisement').forEach(ad => ad.classList.remove('dark-mode'));
+        document.getElementById('imgmode').src = '../static/images/sun.png'; // Change to sun icon or any light mode icon
     }
 
-    // Add event listener for mode toggle
+    // Toggle dark mode
     modeToggle.addEventListener('click', function () {
-        disableDarkMode();
+        if (body.classList.contains('dark-mode')) {
+            disableDarkMode();
+        } else {
+            enableDarkMode();
+        }
     });
 
-    // Disable dark mode on page load
-    disableDarkMode();
+    // Check and apply dark mode preference on page load
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        enableDarkMode();
+    } else {
+        disableDarkMode();
+    }
 });
+
 
 
         function load_all_books(){
