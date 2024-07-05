@@ -89,6 +89,9 @@
         #content {
             /* display: none; Hide content initially */
         }
+        .return_book{
+            margin-top: 0px;
+        }
 
         @media (max-width: 767px) {
             .d-flex {
@@ -183,7 +186,7 @@
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5 class="card-title">Books Past and Near Return Date</h5>
+                                        <h5 class="card-title">Books Near and Past Return Date</h5>
                                         <canvas id="overdueBooksChart"></canvas>
                                     </div>
                                 </div>
@@ -539,31 +542,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
         }
 
-        // function updateBook(bookId) {
-        //     showLoading();
-        //     console.log(bookId)
-        //     fetch(`https://iit-dh-library.onrender.com/update_book/${bookId}`, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(book),
-        //     })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         hideLoading();
-        //         showAlert('success', 'Book updated successfully');
-        //         document.getElementById('add_book').style.display = 'inline-block';
-        //         document.getElementById('update_book').style.display = 'none';
-        //         resetForm();
-        //         loadBooks();
-        //     })
-        //     .catch((error) => {
-        //         hideLoading();
-        //         console.error('Error:', error);
-        //     });
-        // }
-
 
         function removeBook(bookId) {
             showLoading();
@@ -882,7 +860,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         data.forEach(req => {
                             // console.log("Request object:", req); 
                             const listItem = document.createElement('li');
-                            listItem.className = 'list-group-item d-flex justify-content-left align-items-left';
+                            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
 
                             const requestInfo = document.createElement('div');
                             const utcDate = new Date(req.timestamp);
@@ -892,25 +870,35 @@ document.addEventListener('DOMContentLoaded', (event) => {
                             const currentDate = new Date();
                             const timeDifference = currentDate - istDate;
                             const daysPassed = Math.floor(timeDifference / (1000 * 60 * 60 * 24)) ;
+
+                            const return_book = document.createElement('button');
+                            return_book.textContent = 'Book Returned';
+                            return_book.className = 'btn btn-success';
+                            return_book.setAttribute('type', 'button');
                             
-                            requestInfo.innerHTML = `<strong>Name:</strong> ${req.req.Name} | <strong>Email:</strong> ${req.req.email} |  <strong>Book Issued:</strong> ${req.req.bookname} | <strong>Issue Time: </strong> ${formattedDate} | <strong> Days passed: </strong> ${daysPassed}`;
+                            requestInfo.innerHTML = `<strong>Name:</strong> ${req.req.Name} | <strong>Email:</strong> ${req.req.email} |  <strong>Book Issued:</strong> ${req.req.bookname} | <strong>Issue Time: </strong> ${formattedDate} | <strong> Days passed: </strong> ${daysPassed}  <br> `;
+
+                            // requestInfo.insertBefore(return_book, requestInfo.firstChild);
                             
                             if(daysPassed > 7){
                                 listItem.appendChild(requestInfo);
+                                listItem.appendChild(return_book);
                                 past_deadline.appendChild(listItem);
                                 past_deadline_books++;
                             }
                             else if(daysPassed > 5 && daysPassed < 8){
                                 listItem.appendChild(requestInfo);
+                                listItem.appendChild(return_book);
                                 near_deadline.appendChild(listItem);
                                 near_deadline_books++;
                             }
                             else{
                                 listItem.appendChild(requestInfo);
+                                listItem.appendChild(return_book);
                                 accstudents.appendChild(listItem);
 
                             }
-                            console.log(req.req.genre);
+                            // console.log(req.req.genre);
                             if(map.has(req.req.genre)){
                                 map.set(req.req.genre, map.get(req.req.genre) + 1);
                             }
@@ -918,6 +906,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
                                 map.set(req.req.genre, 1);
                             }
                             
+                            return_book.addEventListener('click' , function() {
+                               bookReturned(req._id.$oid);
+                            // console.log(req._id.$oid);
+                            });
 
                         });
                     }
@@ -1051,6 +1043,30 @@ document.addEventListener('DOMContentLoaded', (event) => {
         document.addEventListener('DOMContentLoaded', function () {
             loadallaccreqs();
         });
+
+        function bookReturned(id){
+            console.log(id);
+            showLoading();
+            fetch(`https://iit-dh-library.onrender.com/book_returned/${id}` ,{
+                method: 'POST',
+                headers: {
+                        'Content-Type': 'application/json',
+                    },
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                console.log('Delete success:', data);
+                loadallaccreqs();
+                const alert = document.getElementById('success');
+                alert.textContent = `Success!`;
+                alert.style.display = 'block';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 6000); 
+            })
+
+        }
 
 
         let abt_to_go_ofs = [];
