@@ -13,13 +13,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib
 
-# from Recommender_System.recommender import (
-#     get_content_based_recommendations, 
-#     get_collaborative_filtering_recommendations,
-#     get_hybrid_recommendations,
-#     cosine_sim,
-#     books
-# )
+from Recommender_System.recommender import most_issued_books
 
 import pandas as pd
 import numpy as np
@@ -64,7 +58,7 @@ tfidf_matrix = tfidf.fit_transform(books['combined_features'])
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
 # Collaborative Filtering Setup
-user_book_ratings = user_interactions.pivot(index='user_id', columns='book_id', values='rating').fillna(0)
+user_book_ratings = user_interactions.pivot(index='user_id', columns='book_id', values='rating').fillna(0) + user_interactions.pivot(index='user_id', columns='book_id', values='borrow_count').fillna(0)
 R = user_book_ratings.values
 user_ratings_mean = np.mean(R, axis=1)
 R_demeaned = R - user_ratings_mean.reshape(-1, 1)
@@ -80,19 +74,19 @@ predicted_ratings = np.dot(np.dot(U, sigma), Vt) + user_ratings_mean.reshape(-1,
 predicted_ratings_books = pd.DataFrame(predicted_ratings, columns=user_book_ratings.columns)
 
 # Define recommendation functions
-def get_content_based_recommendations(title, cosine_sim=cosine_sim):
+def get_content_based_recommendations(title, cosine_sim=cosine_sim, num_recommendations=2):
     try:
         idx = books[books['title'] == title].index[0]
         sim_scores = list(enumerate(cosine_sim[idx]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1:3]
+        sim_scores = sim_scores[1:num_recommendations]
         book_indices = [i[0] for i in sim_scores]
         return books.iloc[book_indices][['title', 'author', 'genre']]
     except IndexError:
         logging.error(f"Title '{title}' not found in books dataset")
         return pd.DataFrame(columns=['title', 'author', 'genre'])
 
-def get_collaborative_filtering_recommendations(user_id, num_recommendations=3):
+def get_collaborative_filtering_recommendations(user_id, num_recommendations=2):
     try:
         user_idx = user_id - 1
         user_ratings = predicted_ratings_books.iloc[user_idx]
@@ -113,9 +107,9 @@ def get_hybrid_recommendations(title, user_id, cosine_sim, num_recommendations=3
 def recommend():
     try:
         title = request.args.get('title')
-        print("\n\n", title,"\n\n")
+        # print("\n\n", title,"\n\n")
         user_id = int(request.args.get('user_id'))
-        print("\n\n", user_id,"\n\n")
+        # print("\n\n", user_id,"\n\n")
         num_recommendations = int(request.args.get('num_recommendations', 2))
         
         logging.debug(f"Received recommendation request for title: {title}, user_id: {user_id}, num_recommendations: {num_recommendations}")
@@ -137,6 +131,21 @@ def recommend():
     except Exception as e:
         logging.error(f"Error in recommendation process: {e}")
         return jsonify({"error": f"Failed to generate recommendations: {str(e)}"}), 500
+    
+@app.route('/recommend1', methods=['GET'])
+def recommend1():
+    try:
+        title = request.args.get('title')
+        num_recommendations = int(request.args.get('num_recommendations', 2))
+        
+        if title not in books['title'].values:
+            return jsonify({"error": "Title not found"}), 404
+
+        recommendations = get_content_based_recommendations(title, cosine_sim, num_recommendations)
+        return recommendations.to_json(orient='records')
+    except Exception as e:
+        return jsonify({"error": f"Failed to generate recommendations: {str(e)}"}), 500
+
 
 
 # ====================================================================================================================================================================

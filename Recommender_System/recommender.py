@@ -55,3 +55,28 @@ def get_hybrid_recommendations(title, user_id, cosine_sim, num_recommendations=3
     collaborative_recs = get_collaborative_filtering_recommendations(user_id, num_recommendations)
     combined_recs = pd.concat([content_based_recs, collaborative_recs]).drop_duplicates().head(num_recommendations)
     return combined_recs
+
+def most_issued_books(dataset, branch_year):
+    """
+    This function returns the two most issued books for a given branch and year.
+    
+    Parameters:
+    - dataset: DataFrame containing book issue data with columns 'BookID', 'BranchYear', and 'IssuedCount'
+    - branch_year: String representing the branch and year, e.g., 'EE22BT'
+    
+    Returns:
+    - List of the two most issued books (book IDs)
+    """
+    
+    # Filter the dataset for the given branch and year
+    filtered_data = dataset[dataset['BranchYear'].str.startswith(branch_year)]
+    
+    # Sort the filtered data by IssuedCount in descending order
+    sorted_data = filtered_data.sort_values(by='IssuedCount', ascending=False)
+    
+    # Get the top two most issued books
+    top_books = sorted_data.head(2)['BookID'].tolist()
+    
+    return top_books
+
+
