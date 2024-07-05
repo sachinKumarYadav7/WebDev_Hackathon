@@ -199,7 +199,6 @@ def recommend2():
         logging.error(f"Error in recommendation process: {e}")
         return jsonify({"error": f"Failed to generate recommendations: {str(e)}"}), 500
 
-
 # ====================================================================================================================================================================
 
 

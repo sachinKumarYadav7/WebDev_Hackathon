@@ -188,7 +188,7 @@
             <div class="grid-item advertisement-board" id="ad">
                 <div class="advertisements">
                     <!-- <div class="advertisement">You were looking for a Book in AI/ML, here are some</div> -->
-                    <div id="branch-recommendations", class="advertisement">Other guys from your branch took this book, have a look</div>
+                    <div id="branch-recommendations", class="advertisement"></div>
                     <div id="content-recommended"  class="advertisement">See what other guys are studying of your same interest</div>
                     <div id="recommended-books" class="advertisement"></div>
                 </div>
@@ -258,35 +258,30 @@
                             let booksDiv = document.getElementById('content-recommended');
                             booksDiv.innerHTML = 'Failed to load recommendations.';
                         });
-                });
-            </script>
 
-                <!-- Branch Wise Reccomendation  -->
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    fetch('/recommend2')
-                        .then(response => response.json())
-                        .then(data => {
-                            let recommendationsDiv = document.getElementById('branch-recommendations');
-                            if (data.error) {
-                                recommendationsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
-                            } else {
-                                let recommendationsList = '<ul>';
-                                data.forEach(book => {
-                                    recommendationsList += `<li>${book}</li>`;
-                                });
-                                recommendationsList += '</ul>';
-                                recommendationsDiv.innerHTML = recommendationsList;
-                            }
-                        })
-                        .catch(error => {
-                            document.getElementById('branch-recommendations').innerHTML = `<p>Error: ${error.message}</p>`;
-                        });
+                        // Branch Wise Reccomendation
+                        fetch('/recommend2')
+            .then(response => response.json())
+            .then(data => {
+                let recommendationsDiv = document.getElementById('branch-recommendations');
+                if (data.error) {
+                    recommendationsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                } else {
+                    let recommendationsList = '<ul>';
+                    data.forEach(book => {
+                        recommendationsList += `<li>${book}</li>`;
+                    });
+                    recommendationsList += '</ul>';
+                    recommendationsDiv.innerHTML = recommendationsList;
+                }
+            })
+            .catch(error => {
+                document.getElementById('branch-recommendations').innerHTML = `<p>Error: ${error.message}</p>`;
+            });
                 });
             </script>
             
 
-            
             <div class="grid-item" >
                 <h5>Pending Issue Requests</h5>
                 <ul id="issuelist" class="list-group mt-4">
