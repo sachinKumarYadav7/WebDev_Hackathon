@@ -152,6 +152,59 @@ def recommend1():
 
 
 
+# ==========================================Most Issued book BranchWise==========================================================================================================================
+data = client['admi']['accepted']
+
+# Fetch all records from the 'accepted' collection
+records = list(data.find())
+
+# Create a DataFrame from the MongoDB records
+df = pd.DataFrame(records)
+
+# Function to extract fields from 'req' dictionary
+def extract_req_field(req, field):
+    return req.get(field, None)
+
+# Extract 'email' and 'bookname' into separate columns
+df['email'] = df['req'].apply(lambda x: extract_req_field(x, 'email'))
+df['bookname'] = df['req'].apply(lambda x: extract_req_field(x, 'bookname'))
+
+# Function to extract branch year from email
+def extract_branch_year(email):
+    return str(email.split('@')[0])[:-3]
+
+# Add a column for BranchYear
+df['BranchYear'] = df['email'].apply(extract_branch_year)
+
+# Group by BookName and BranchYear to get the count of issues
+issue_counts = df.groupby(['bookname', 'BranchYear']).size().reset_index(name='IssueCount')
+
+def most_issued_books(dataset, branch_year):
+    filtered_data = dataset[dataset['BranchYear'] == branch_year]
+    sorted_data = filtered_data.sort_values(by='IssueCount', ascending=False)
+    top_books = sorted_data.head(2)['bookname'].tolist()
+    return top_books
+
+@app.route('/recommend2', methods=['GET'])
+def recommend2():
+    try:
+        user_email = session['user']['email']
+        branch_year = extract_branch_year(user_email)
+        recommendations = most_issued_books(issue_counts, branch_year)
+        
+        logging.debug(f"Generated recommendations: {recommendations}")
+        
+        return jsonify(recommendations)
+    except Exception as e:
+        logging.error(f"Error in recommendation process: {e}")
+        return jsonify({"error": f"Failed to generate recommendations: {str(e)}"}), 500
+
+
+# ====================================================================================================================================================================
+
+
+
+
 
 # =========================================Search_History========================================================================================================
 database = client['search_history_db']
