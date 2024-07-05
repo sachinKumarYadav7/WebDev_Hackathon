@@ -333,7 +333,7 @@
                         <div class="card mt-4">
                             <div class="card-body">
                                 <h5 class="card-title">Books List</h5>
-                                <p id="bookCountDisplay">Total Books: 0</p>
+                                <!-- <p id="bookCountDisplay">Total Books: 0</p> -->
                                 <ul id="booksList" class="list-group">
                                     <!-- List of books will be dynamically inserted here -->
                                 </ul>
@@ -393,15 +393,100 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
 
-        
+
+
+
+document.addEventListener('DOMContentLoaded', (event) => {
+            const searchbar = document.getElementById('searchBar');
+
+            searchbar.addEventListener('input', () => {
+                const query = searchbar.value;
+                var loading = document.getElementById("loading");
+
+                loading.style.display = "block";
+                loading.style.position = "fixed";
+                loading.style.width = "100%";
+                loading.style.height = "100%";
+                loading.style.top = "0";
+                loading.style.left = "0";
+                loading.style.display = "flex";
+                loading.style.justifyContent = "center";
+                loading.style.alignItems = "center";
+                loading.style.zIndex = "9999";
+                loading.style.backdropFilter = "blur(5px)";
+
+                fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = "none";
+                    const booksList = document.getElementById('booksList');
+                    booksList.innerHTML = '';
+                    // document.getElementById('bookCountDisplay').textContent = `Total Books: ${data.length}`;
+
+                    if(data.length === 0){
+                        loading.style.display = "none"; 
+                        const notfound = `<div class="notfound">
+                                                <p>No matches for search : ${query}</p>
+                                            </div>`;
+                        booksList.insertAdjacentHTML('beforeend', notfound);
+                    }
+                    else{
+                        data.forEach(book => {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                            listItem.innerHTML = `
+                                <div>
+                                    <strong>${book.title}</strong> by ${book.author}
+                                    <p>${book.description}</p>
+                                    <p>Genre: ${book.genre} |  Department: ${book.department} |  Publisher: ${book.publisher}</p>
+                                    <p>Count: ${book.count}</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary btn-sm" onclick='editBook(${JSON.stringify(book)})'>Edit</button>
+                                    <button class="btn btn-danger btn-sm" onclick='removeBook("${book._id}")'>Remove</button>
+                                </div>
+                            `;
+                            booksList.appendChild(listItem);
+                        });
+                    }
+                    
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+
+
+        // document.getElementById('searchBar').addEventListener('input', function () {
+        //     const searchTerm = this.value.toLowerCase();
+        //     const rows = document.querySelectorAll('#booksTableBody tr');
+        //     rows.forEach(row => {
+        //         const title = row.children[0].textContent.toLowerCase();
+        //         const author = row.children[1].textContent.toLowerCase();
+        //         const genre = row.children[2].textContent.toLowerCase();
+        //         if (title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm)) {
+        //             row.style.display = '';
+        //         } else {
+        //             row.style.display = 'none';
+        //         }
+        //     });
+        // });
 
         function loadBooks() {
             fetch('https://iit-dh-library.onrender.com/books')
             .then(response => response.json())
             .then(data => {
+                console.log(data.length);
                 const booksList = document.getElementById('booksList');
                 booksList.innerHTML = '';
-                document.getElementById('bookCountDisplay').textContent = `Total Books: ${data.length}`;
+                // document.getElementById('bookCountDisplay').textContent = `Total Books: ${data.length}`;
 
                 data.forEach(book => {
                     const listItem = document.createElement('li');
@@ -495,7 +580,14 @@
                 return response.json();
             })
             .then(data => {
+
                 hideLoading();
+                window.scrollTo({
+                    top: 0,
+                    left: 0,
+                    behavior: 'smooth'
+                });
+
                 if (data.status === 'success') {
                     showAlert('success', data.message);
                     loadBooks(); 
@@ -1142,122 +1234,74 @@
             }
         });
 
-        function add_ofs_books(){
+        function load_ofs_books(){
+            var loading = document.getElementById("loading");
             fetch('https://iit-dh-library.onrender.com/books')
             .then(response => response.json())
             .then(data => {
+                const requestList = document.getElementById('outOfStockBooksList');
+                requestList.innerHTML = ''; 
+
                 data.forEach(function(book) {
-                    // const truncatedTitle = book.title ? (book.title.length > 50 ? book.title.substring(0, 50) + '...' : book.title) : 'No title available';
-                    // const truncatedDesc = book.description ? (book.description.length > 100 ? book.description.substring(0, 100) + '...' : book.description) : 'No description available';
 
-                    if(book.count === 0){
-                        
-                        fetch('https://iit-dh-library.onrender.com/out_of_stock' ,{
-                            method: 'POST',
-                            headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                            body: JSON.stringify(book),
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Success:', data);
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                        });
+                    if(parseInt(book.count, 10) === 0){
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item d-flex justify-content-left align-items-left';
 
+                        const requestInfo = document.createElement('div');
+                        requestInfo.innerHTML = `<strong>Book:</strong> ${book.title} | <strong>Authors:</strong> ${book.author}`;
+
+                        listItem.appendChild(requestInfo);
+                        requestList.appendChild(listItem);
                     }
                     
                 });
-
+                loading.style.display = "none";
             })
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            add_ofs_books();
-        });
-
-        function load_ofs_books() {
-            var loading = document.getElementById("loading");
-            fetch('https://iit-dh-library.onrender.com/load_out_of_stock_books')
-                .then(response => response.json())
-                .then(data => {
-                    // console.log("Data received from server:", data);  
-                    const requestList = document.getElementById('outOfStockBooksList');
-                    requestList.innerHTML = ''; 
-
-                    if (data.length === 0) {
-                        const noRequestMessage = document.createElement('li');
-                        noRequestMessage.className = 'list-group-item';
-                        noRequestMessage.textContent = 'All the books are in stock :)';
-                        requestList.appendChild(noRequestMessage);
-                    } else {
-                        data.forEach(req => {
-                            // console.log("Request object:", req); 
-                            const listItem = document.createElement('li');
-                            listItem.className = 'list-group-item d-flex justify-content-left align-items-left';
-
-                            const requestInfo = document.createElement('div');
-                            requestInfo.innerHTML = `<strong>Book:</strong> ${req.title} | <strong>Authors:</strong> ${req.author}`;
-
-                            listItem.appendChild(requestInfo);
-                            requestList.appendChild(listItem);
-                        });
-                        loading.style.display = "none";
-                    }
-                })
-                .catch(error => console.error('Error fetching issue requests:', error));
-        }
-
-
-        document.addEventListener('DOMContentLoaded', function () {
             load_ofs_books();
         });
-
-        
-     
-            
+ 
         const aboutToGetOutOfStockBooksData = [1, 1, 2, 3, 3];
         const genreBooksData = [30, 20, 25, 15, 10];
-        const borrowedReturnedData = [5, 20, 5, 55, 20]; // Monthly returned data from Jan to May
+        const borrowedReturnedData = [5, 20, 5, 55, 20]; 
 
            
    
             
 
-            // Initialize the charts
-            document.addEventListener('DOMContentLoaded', function () {
-              
-                
-                
 
-                new Chart(document.getElementById('borrowedReturnedChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: ['January', 'February', 'March', 'April', 'May'],
-                        datasets: [{
-                            label: 'Books Returned',
-                            data: borrowedReturnedData,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1,
-                            fill: false,
-                            tension: 0.1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
+        document.addEventListener('DOMContentLoaded', function () {
+            
+
+            new Chart(document.getElementById('borrowedReturnedChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May'],
+                    datasets: [{
+                        label: 'Books Returned',
+                        data: borrowedReturnedData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
                         }
                     }
+                }
 
-                });
-               
             });
+            
+        });
         
         
         

@@ -91,12 +91,12 @@ def logout():
 @app.route('/books')
 def get_books():
     page = int(request.args.get('page', 1))
-    limit = int(request.args.get('limit', 100))
+    limit = int(request.args.get('limit', 140))
     skip = (page - 1) * limit
     
     books = list(b.find().skip(skip).limit(limit))
     for book in books:
-        book['_id'] = str(book['_id'])  # Convert ObjectId to string for JSON serialization
+        book['_id'] = str(book['_id'])  
     
     return jsonify(books)
 
