@@ -11,6 +11,24 @@
             background-color: #f8f9fa;
         }
 
+        /* Add these styles to your CSS */
+
+.announcement.dark-mode {
+    background-color: #424242;
+    color: #e0e0e0;
+}
+
+.issue-book.dark-mode {
+    background-color: #424242;
+    color: #e0e0e0;
+}
+
+/* Optional: Add transition for smooth mode switching */
+body, .navbar, .nav-link, .card, .advertisement, .announcement, .issue-book {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+
 
         body.dark-mode {
     background-color: #121212;
@@ -376,31 +394,42 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(showNextAd, 5000);
 });
 
+// Add this script block or include it in your existing script
+
 document.addEventListener('DOMContentLoaded', function () {
     const modeToggle = document.getElementById('mode');
     const body = document.body;
 
-    // Function to enable dark mode
     function enableDarkMode() {
         body.classList.add('dark-mode');
         document.querySelectorAll('.navbar').forEach(nav => nav.classList.add('dark-mode'));
         document.querySelectorAll('.nav-link').forEach(link => link.classList.add('dark-mode'));
         document.querySelectorAll('.card').forEach(card => card.classList.add('dark-mode'));
         document.querySelectorAll('.advertisement').forEach(ad => ad.classList.add('dark-mode'));
-        document.getElementById('imgmode').src = '../static/images/moon.png'; // Change to moon icon or any dark mode icon
+        document.querySelectorAll('.announcement').forEach(announcement => announcement.classList.add('dark-mode'));
+        document.querySelectorAll('.issue-book').forEach(issueBook => issueBook.classList.add('dark-mode'));
+        document.getElementById('imgmode').src = '../static/images/moon.png';
     }
 
-    // Function to disable dark mode
     function disableDarkMode() {
         body.classList.remove('dark-mode');
         document.querySelectorAll('.navbar').forEach(nav => nav.classList.remove('dark-mode'));
         document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('dark-mode'));
         document.querySelectorAll('.card').forEach(card => card.classList.remove('dark-mode'));
         document.querySelectorAll('.advertisement').forEach(ad => ad.classList.remove('dark-mode'));
-        document.getElementById('imgmode').src = '../static/images/sun.png'; // Change to sun icon or any light mode icon
+        document.querySelectorAll('.announcement').forEach(announcement => announcement.classList.remove('dark-mode'));
+        document.querySelectorAll('.issue-book').forEach(issueBook => issueBook.classList.remove('dark-mode'));
+        document.getElementById('imgmode').src = '../static/images/sun.png';
     }
 
-    // Toggle dark mode
+    function applyDarkModeToNewElements() {
+        if (body.classList.contains('dark-mode')) {
+            enableDarkMode();
+        } else {
+            disableDarkMode();
+        }
+    }
+
     modeToggle.addEventListener('click', function () {
         if (body.classList.contains('dark-mode')) {
             disableDarkMode();
@@ -415,6 +444,11 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         disableDarkMode();
     }
+
+    // Apply dark mode to dynamically added elements
+    document.addEventListener('DOMNodeInserted', function () {
+        applyDarkModeToNewElements();
+    });
 });
 
 
