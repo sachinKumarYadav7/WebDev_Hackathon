@@ -13,246 +13,17 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib
 
-from Recommender_System.recommender import most_issued_books
-
-import pandas as pd
-import numpy as np
-from scipy.sparse.linalg import svds
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import linear_kernel, cosine_similarity
-
 
 app = Flask(__name__)
 CORS(app)
 
 app.secret_key = "your_secret_key"  # Add a secret key for session management
 
-# Database connection
-
 # Connect to MongoDB
-# client = MongoClient("mongodb+srv://Samarth_7:Sam_mongo_atlas@iitdhcluster.a1gizlj.mongodb.net/?retryWrites=true&w=majority&appName=iitdhcluster")
-client = MongoClient("mongodb://localhost:27017")
+client = MongoClient("mongodb+srv://Samarth_7:Sam_mongo_atlas@iitdhcluster.a1gizlj.mongodb.net/?retryWrites=true&w=majority&appName=iitdhcluster")
+# client = MongoClient("mongodb://localhost:27017")
 
 
-# ===================================================================================================================================================================
-
-# Accessing the book from database
-books_collection = client['all_books']['books2']
-user_interactions_collection = client['all_books']['user_rating']
-
-# Load your data here
-books = pd.DataFrame(list(books_collection.find()))
-books['book_id'] = range(1, len(books) + 1)
-books['book_id'] = books['book_id'].apply(lambda x: str(x).zfill(6)).astype(int)
-user_interactions = pd.DataFrame(list(user_interactions_collection.find()))
-
-# Ensure all entries in combined_features are strings
-books['combined_features'] = (books['title'].fillna('') + ' ' + 
-                              books['description'].fillna('') + ' ' + 
-                              books['author'].fillna('') + ' ' + 
-                              books['genre'].fillna('') + ' ' + 
-                              books['department'].fillna(''))
-
-tfidf = TfidfVectorizer(stop_words='english')
-tfidf_matrix = tfidf.fit_transform(books['combined_features'])
-cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
-
-# Collaborative Filtering Setup
-user_book_ratings = user_interactions.pivot(index='user_id', columns='book_id', values='rating').fillna(0) + user_interactions.pivot(index='user_id', columns='book_id', values='borrow_count').fillna(0)
-R = user_book_ratings.values
-user_ratings_mean = np.mean(R, axis=1)
-R_demeaned = R - user_ratings_mean.reshape(-1, 1)
-
-# Determine the appropriate value of k based on the shape of R_demeaned
-num_users, num_books = R_demeaned.shape
-k = min(num_users, num_books) - 1  # Set k to be less than the smaller dimension
-
-# Perform matrix factorization with the adjusted value of k
-U, sigma, Vt = svds(R_demeaned, k=k)
-sigma = np.diag(sigma)
-predicted_ratings = np.dot(np.dot(U, sigma), Vt) + user_ratings_mean.reshape(-1, 1)
-predicted_ratings_books = pd.DataFrame(predicted_ratings, columns=user_book_ratings.columns)
-
-# Define recommendation functions
-def get_content_based_recommendations(title, cosine_sim=cosine_sim, num_recommendations=2):
-    try:
-        idx = books[books['title'] == title].index[0]
-        sim_scores = list(enumerate(cosine_sim[idx]))
-        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1:num_recommendations]
-        book_indices = [i[0] for i in sim_scores]
-        return books.iloc[book_indices][['title', 'author', 'genre']]
-    except IndexError:
-        logging.error(f"Title '{title}' not found in books dataset")
-        return pd.DataFrame(columns=['title', 'author', 'genre'])
-
-def get_collaborative_filtering_recommendations(user_id, num_recommendations=2):
-    try:
-        user_idx = user_id - 1
-        user_ratings = predicted_ratings_books.iloc[user_idx]
-        sorted_indices = np.argsort(user_ratings)[::-1]
-        recommended_indices = sorted_indices[:num_recommendations]
-        return books[books['book_id'].isin(predicted_ratings_books.columns[recommended_indices])][['title', 'author', 'genre']]
-    except IndexError:
-        logging.error(f"User ID '{user_id}' not found in user interactions dataset")
-        return pd.DataFrame(columns=['title', 'author', 'genre'])
-
-def get_hybrid_recommendations(title, user_id, cosine_sim, num_recommendations=3):
-    content_based_recs = get_content_based_recommendations(title, cosine_sim)
-    collaborative_recs = get_collaborative_filtering_recommendations(user_id, num_recommendations)
-    combined_recs = pd.concat([content_based_recs, collaborative_recs]).drop_duplicates().head(num_recommendations)
-    return combined_recs
-
-@app.route('/recommend', methods=['GET'])
-def recommend():
-    try:
-        title = request.args.get('title')
-        # print("\n\n", title,"\n\n")
-        user_id = int(request.args.get('user_id'))
-        # print("\n\n", user_id,"\n\n")
-        num_recommendations = int(request.args.get('num_recommendations', 2))
-        
-        logging.debug(f"Received recommendation request for title: {title}, user_id: {user_id}, num_recommendations: {num_recommendations}")
-        
-        # Validate parameters
-        if title not in books['title'].values:
-            logging.error(f"Title '{title}' not found in books dataset")
-            return jsonify({"error": "Title not found"}), 404
-
-        if user_id not in user_interactions['user_id'].values:
-            logging.error(f"User ID '{user_id}' not found in user interactions dataset")
-            return jsonify({"error": "User ID not found"}), 404
-
-        recommendations = get_hybrid_recommendations(title, user_id, cosine_sim, num_recommendations)
-        
-        logging.debug(f"Generated recommendations: {recommendations}")
-        
-        return recommendations.to_json(orient='records')
-    except Exception as e:
-        logging.error(f"Error in recommendation process: {e}")
-        return jsonify({"error": f"Failed to generate recommendations: {str(e)}"}), 500
-    
-@app.route('/recommend1', methods=['GET'])
-def recommend1():
-    try:
-        title = request.args.get('title')
-        num_recommendations = int(request.args.get('num_recommendations', 2))
-        
-        if title not in books['title'].values:
-            return jsonify({"error": "Title not found"}), 404
-
-        recommendations = get_content_based_recommendations(title, cosine_sim, num_recommendations)
-        return recommendations.to_json(orient='records')
-    except Exception as e:
-        return jsonify({"error": f"Failed to generate recommendations: {str(e)}"}), 500
-
-
-
-# ====================================================================================================================================================================
-
-
-
-# ==========================================Most Issued book BranchWise==========================================================================================================================
-data = client['admi']['accepted']
-
-# Fetch all records from the 'accepted' collection
-records = list(data.find())
-
-# Create a DataFrame from the MongoDB records
-df = pd.DataFrame(records)
-
-# Function to extract fields from 'req' dictionary
-def extract_req_field(req, field):
-    return req.get(field, None)
-
-# Extract 'email' and 'bookname' into separate columns
-df['email'] = df['req'].apply(lambda x: extract_req_field(x, 'email'))
-df['bookname'] = df['req'].apply(lambda x: extract_req_field(x, 'bookname'))
-
-# Function to extract branch year from email
-def extract_branch_year(email):
-    return str(email.split('@')[0])[:-3]
-
-# Add a column for BranchYear
-df['BranchYear'] = df['email'].apply(extract_branch_year)
-
-# Group by BookName and BranchYear to get the count of issues
-issue_counts = df.groupby(['bookname', 'BranchYear']).size().reset_index(name='IssueCount')
-
-def most_issued_books(dataset, branch_year):
-    filtered_data = dataset[dataset['BranchYear'] == branch_year]
-    sorted_data = filtered_data.sort_values(by='IssueCount', ascending=False)
-    top_books = sorted_data.head(2)['bookname'].tolist()
-    return top_books
-
-@app.route('/recommend2', methods=['GET'])
-def recommend2():
-    try:
-        user_email = session['user']['email']
-        branch_year = extract_branch_year(user_email)
-        recommendations = most_issued_books(issue_counts, branch_year)
-        
-        logging.debug(f"Generated recommendations: {recommendations}")
-        
-        return jsonify(recommendations)
-    except Exception as e:
-        logging.error(f"Error in recommendation process: {e}")
-        return jsonify({"error": f"Failed to generate recommendations: {str(e)}"}), 500
-
-# ====================================================================================================================================================================
-
-
-
-
-
-# =========================================Search_History========================================================================================================
-database = client['search_history_db']
-@app.route('/search', methods=['POST'])
-def search():
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 403
-
-    data = request.get_json()
-    query = data.get('query', '').strip()
-
-    if not query:
-        return jsonify({'message': 'Search query cannot be empty'}), 400
-
-    user_id = session['user']['email'][:-12:]
-
-    # Save search history to the database
-    new_search = {
-        'user_id': user_id,
-        'search_query': query,
-        'timestamp': datetime.utcnow()
-    }
-    database.search_history.insert_one(new_search)
-    app.logger.info('Search query recorded for user_id: %s', user_id)
-
-    # Perform the search
-    results = list(b.find({"title": {"$regex": query, "$options": "i"}}))
-
-    for book in results:
-        book['_id'] = str(book['_id'])
-
-    return jsonify(results)
-
-
-
-@app.route('/search-history', methods=['GET'])
-def get_search_history():
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 403
-
-    user_id = session['user']['_id']
-    history = database.search_history.find({'user_id': user_id})
-
-    history_data = [{'search_query': record['search_query'], 'timestamp': record['timestamp']} for record in history]
-
-    return jsonify(history_data), 200
-
-
-# ===============================================================================================================================================================
 
 db = client.admi 
 users_collection = db.user_login  
@@ -268,7 +39,6 @@ acc = client.admi
 
 ofs = client.admi
 stock = ofs.out_of_stock
-
 
 
 def login_required(f):
@@ -491,18 +261,18 @@ def get_acc_by_user():
     return dumps(acc_by_user), 200
 
     
-# @app.route('/search' , methods = ['POST'])
-# def search():
-#     data = request.get_json()
-#     query = data.get('query', '')
+@app.route('/search' , methods = ['POST'])
+def search():
+    data = request.get_json()
+    query = data.get('query', '')
 
-#     results = list(b.find({"title": {"$regex": query, "$options": "i"}}))
+    results = list(b.find({"title": {"$regex": query, "$options": "i"}}))
 
-#     for book in results:
-#         book['_id'] = str(book['_id'])
+    for book in results:
+        book['_id'] = str(book['_id'])
 
 
-#     return jsonify(results)
+    return jsonify(results)
 
 @app.route('/search_by_genre_and_dept', methods=['POST'])
 def searchbydeptngenre():
