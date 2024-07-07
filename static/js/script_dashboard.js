@@ -83,54 +83,67 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
-  document.getElementById("mode").addEventListener("click", function() {
-      const nav = document.getElementById('navbar');
-      const body = document.body;
-      const logo = document.getElementById('imgmode');
-      const searchb = document.getElementById('search_bar');
-      const g = document.getElementById('grid');
-      const c = document.getElementById('ad');
-      const feedback = document.getElementById('feedback');
-      const cs = document.getElementsByClassName('card');
-      
-      const advertisements = document.getElementsByClassName('advertisement');
+    document.getElementById("mode").addEventListener("click", function() {
+        const nav = document.getElementById('navbar');
+        const body = document.body;
+        const logo = document.getElementById('imgmode');
+        const searchb = document.getElementById('search_bar');
+        const g = document.getElementById('grid');
+        const Pending_issue_reqs = document.getElementById('Pending_issue_reqs');
+        const issuelist = document.getElementById('issuelist');
+        const announcement = document.getElementById('announcement');
+        const c = document.getElementById('ad');
+        const feedback = document.getElementById('feedback');
+        const cs = document.getElementsByClassName('card');
+        const advertisements = document.getElementsByClassName('advertisement');
+        const advertisements_active = document.getElementsByClassName('advertisement.active');
+    
+        const darkMode = nav.classList.contains('bg-dark');
   
-      if (nav.classList.contains('bg-light')) {
-          nav.classList.remove('bg-light', 'navbar-light');
-          nav.classList.add('bg-dark', 'navbar-dark');
-          body.style.backgroundColor = 'black';
-          body.style.color = 'white'; 
-          logo.src = "../static/images/day-mode.png";
-          searchb.style.backgroundColor = 'black';
-          searchb.style.color = 'white';
-          g.style.backgroundColor = '#343736'
-          for (var i = 0; i < cs.length; i++) {
-              cs[i].style.backgroundColor = 'black';
-              cs[i].style.color = 'white';
-          }
-          for (var i = 0; i < advertisements.length; i++) {
-              advertisements[i].style.backgroundColor = 'black';
-          }
-          c.style.backgroundColor = '#343736';
-          feedback.style.backgroundColor = '#343736'               
-      } else {
-          nav.classList.remove('bg-dark', 'navbar-dark');
-          nav.classList.add('bg-light', 'navbar-light');
-          body.style.backgroundColor = 'white';
-          body.style.color = 'black'; 
-          logo.src = "../static/images/moon.png";
-          searchb.style.backgroundColor = 'white';
-          searchb.style.color = 'black';
-          g.style.backgroundColor = 'rgb(243 243 243)';
-          for (var i = 0; i < cs.length; i++) {
-              cs[i].style.backgroundColor = 'white';
-              cs[i].style.color = 'black';
-          }
-          for (var i = 0; i < advertisements.length; i++) {
-              advertisements[i].style.backgroundColor = 'white';
-          }
-          c.style.backgroundColor = 'rgb(243 243 243)'
-          feedback.style.backgroundColor = 'rgb(243 243 243)'   
-      }
+        if (darkMode){
+            nav.classList.remove('bg-dark', 'navbar-dark');
+            nav.style.backgroundColor = '#6a1b9a';
+            body.style.backgroundColor = '#f8f9fa';
+            body.style.color = 'black'; 
+            logo.src = "../static/images/moon.png";
+            searchb.style.backgroundColor = 'white';
+            searchb.style.color = 'black';
+            Pending_issue_reqs.style.backgroundColor = 'white';
+            g.style.backgroundColor = 'white';
+            for (let i = 0; i < cs.length; i++) {
+                cs[i].style.backgroundColor = 'white';
+                cs[i].style.color = 'black';
+            }
+            for (let i = 0; i < advertisements.length; i++) {
+                advertisements[i].style.backgroundColor = 'white';
+            }
+            c.style.backgroundColor = 'rgb(243, 243, 243)';
+            feedback.style.backgroundColor = 'rgb(243, 243, 243)';             
+        } else {
+            nav.classList.remove('bg-light', 'navbar-light');
+            nav.classList.add('bg-dark', 'navbar-dark');
+            body.style.backgroundColor = 'black';
+            body.style.color = 'white'; 
+            nav.style.color = 'rgba(255, 255, 255, .5)'; 
+            logo.src = "../static/images/day-mode.png";
+            searchb.style.backgroundColor = 'black';
+            searchb.style.color = 'white';
+            g.style.backgroundColor = 'rgb(52, 55, 54)';
+            Pending_issue_reqs.style.backgroundColor = 'rgb(52, 55, 54)';
+            announcement.style.backgroundColor = 'rgb(52, 55, 54)';
+            issuelist.style.backgroundColor = 'rgb(52, 55, 54)';
+            
+            for (let i = 0; i < cs.length; i++) {
+                cs[i].style.backgroundColor = 'black';
+                cs[i].style.color = 'white';
+            }
+            for (let i = 0; i < advertisements.length; i++) {
+                advertisements[i].style.backgroundColor = 'black';
+            }
+            c.style.backgroundColor = '#343736';
+            advertisements_active.backgroundColor = 'red';
+            feedback.style.backgroundColor = '#343736';     
+        }
+    });
   });
-});
+  
