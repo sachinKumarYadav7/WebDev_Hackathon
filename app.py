@@ -163,6 +163,14 @@ def book_returned(id):
         return jsonify({'status': 'success', 'message': 'Entry deleted successfully'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
+
+@app.route('/delete_announcement/<id>', methods=['POST'])
+def delete_announcement(id):
+    try:
+        db.announcements.delete_one({'_id':ObjectId(id) })
+        return jsonify({'status': 'success', 'message': 'Entry deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
     
 @app.route('/deletebook/<book_id>', methods=['POST', 'OPTIONS'])
 @cross_origin()
@@ -350,39 +358,3 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
 
-# @app.route('/books', methods=['GET'])
-# def get_books():
-#     books = list(b.find())
-#     for book in books:
-#         book['_id'] = str(book['_id'])  # Convert ObjectId to string for JSON serialization
-#     return jsonify(books)
-
-# @app.route('/books/<book_id>', methods=['GET'])
-# def get_book(book_id):
-#     book = b.find_one({"_id": ObjectId(book_id)})
-#     if book:
-#         book['_id'] = str(book['_id'])  # Convert ObjectId to string for JSON serialization
-#         return jsonify(book)
-#     return jsonify({"error": "Book not found"}), 404
-
-# @app.route('/books/<book_id>', methods=['PUT'])
-# def update_book(book_id):
-#     data = request.get_json()
-#     b.update_one(
-#         {"_id": ObjectId(book_id)},
-#         {"$set": {
-#             "title": data['title'],
-#             "description": data['description'],
-#             "author": data['author'],
-#             "genre": data['genre'],
-#             "department": data['department'],
-#             "count": data['count'],
-#             "publisher": data['publisher']
-#         }}
-#     )
-#     return jsonify({"message": "Book updated"}), 200
-
-# @app.route('/books/<book_id>', methods=['DELETE'])
-# def delete_book(book_id):
-#     b.delete_one({"_id": ObjectId(book_id)})
-#     return jsonify({"message": "Book deleted"}), 200

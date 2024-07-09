@@ -662,14 +662,51 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     announcementList.innerHTML = '';
                     data.forEach(announcement => {
                         const li = document.createElement('li');
-                        li.className = 'list-group-item';
-                 
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        
+                        const requestInfo = document.createElement('div');
                         const utcDate = new Date(announcement.timestamp);
                         const istDate = new Date(utcDate.getTime() + (330 * 60000)); 
                         const formattedDate = istDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
-                        li.textContent = `${announcement.announcement} (Posted on: ${formattedDate})`;
+                        const delete_announcement = document.createElement('button');
+                        delete_announcement.textContent= 'Delete';
+                        delete_announcement.className = 'btn btn-danger';
+                        delete_announcement.setAttribute('type', 'button');
+
+                        requestInfo.textContent = `${announcement.announcement} (Posted on: ${formattedDate})`;
+                        li.appendChild(requestInfo);
+                        li.appendChild(delete_announcement);
                         announcementList.appendChild(li);
+
+                        delete_announcement.addEventListener('click' , function() {
+                            console.log(announcement._id.$oid);
+                            window.scrollTo({
+                                top: 0,
+                                left: 0,
+                                behavior: 'smooth'
+                            });
+                            showLoading();
+                            fetch(`https://iit-dh-library.onrender.com/delete_announcement/${announcement._id.$oid}` ,{
+                                method: 'POST',
+                                headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                loadAnnouncements();
+                                hideLoading();
+                                console.log('Delete success:', data);
+                                loadallaccreqs();
+                                const alert = document.getElementById('success');
+                                alert.textContent = `Success! Announcement deleted`;
+                                alert.style.display = 'block';
+                                setTimeout(() => {
+                                    alert.style.display = 'none';
+                                }, 6000); 
+                            })
+                        })
                     });
                 });
                 
