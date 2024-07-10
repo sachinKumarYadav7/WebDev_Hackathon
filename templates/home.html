@@ -18,9 +18,9 @@
         .navbar-brand img {
             height: 40px;
         }
-        .navbar-nav .nav-link {
+        /* .navbar-nav .nav-link {
             color: #fff !important;
-        }
+        } */
         .nav-link.active {
             background-color: #8e24aa;
         }
@@ -60,6 +60,7 @@
             height: 200px; 
             /* perspective: 1000px; */
         }
+       
 
         .card {
             position: absolute;
@@ -227,9 +228,12 @@
                 </div>
                 <div class="grid-item advertisement-board" id="ad">
                     <div class="advertisements">
-                        <div class="advertisement">You were looking for a Book in AI/ML, here are some</div>
+                        <div id="branch-recommendations", class="advertisement"></div>
+                        <div id="content-recommended"  class="advertisement">See what other guys are studying of your same interest</div>
+                        <div id="recommended-books" class="advertisement"></div>
+                        <!-- <div class="advertisement">You were looking for a Book in AI/ML, here are some</div>
                         <div class="advertisement">Other guys from your branch took this book, have a look</div>
-                        <div class="advertisement">See what other guys are studying of your same interest</div>
+                        <div class="advertisement">See what other guys are studying of your same interest</div> -->
                     </div>
                 </div>
                 <div class="grid-item" >
@@ -941,6 +945,92 @@
             option.textContent = dep;
             deptselect.appendChild(option);
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+                    const advertisements = document.querySelectorAll('.advertisement');
+                    let currentAdIndex = 0;
+                
+                    function showNextAd() {
+                        advertisements[currentAdIndex].classList.remove('active');
+                        currentAdIndex = (currentAdIndex + 1) % advertisements.length;
+                        advertisements[currentAdIndex].classList.add('active');
+                    }
+                
+                    advertisements[currentAdIndex].classList.add('active');
+                    setInterval(showNextAd, 5000);
+                
+                    // Fetching recommendations
+                    const userId = 3; // Replace with dynamic user_id as needed
+                    const title = "Introduction to Algorithms"; // Replace with dynamic title as needed
+                
+                    // Fetch hybrid recommendations
+                    fetch(`/recommend?title=${title}&user_id=${userId}&num_recommendations=3`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Network response was not ok: ${response.statusText}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            let booksDiv = document.getElementById('recommended-books');
+                            booksDiv.innerHTML = ''; // Clear any previous content
+                            data.forEach(book => {
+                                let bookDiv = document.createElement('div');
+                                bookDiv.classList.add('book');
+                                bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
+                                booksDiv.appendChild(bookDiv);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('There was a problem with the fetch operation:', error);
+                            let booksDiv = document.getElementById('recommended-books');
+                            booksDiv.innerHTML = 'Failed to load recommendations.';
+                        });
+                
+                    // Fetch content-based recommendations
+                    fetch(`/recommend1?title=${title}&num_recommendations=3`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Network response was not ok: ${response.statusText}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            let booksDiv = document.getElementById('content-recommended');
+                            booksDiv.innerHTML = ''; // Clear any previous content
+                            data.forEach(book => {
+                                let bookDiv = document.createElement('div');
+                                bookDiv.classList.add('book');
+                                bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
+                                booksDiv.appendChild(bookDiv);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('There was a problem with the fetch operation:', error);
+                            let booksDiv = document.getElementById('content-recommended');
+                            booksDiv.innerHTML = 'Failed to load recommendations.';
+                        });
+
+                        // Branch Wise Reccomendation
+                        fetch('/recommend2')
+                        .then(response => response.json())
+                        .then(data => {
+                            let recommendationsDiv = document.getElementById('branch-recommendations');
+                            if (data.error) {
+                                recommendationsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                            } else {
+                                let recommendationsList = '<ul>';
+                                data.forEach(book => {
+                                    recommendationsList += `<li>${book}</li>`;
+                                });
+                                recommendationsList += '</ul>';
+                                recommendationsDiv.innerHTML = recommendationsList;
+                            }
+                        })
+                        .catch(error => {
+                            document.getElementById('branch-recommendations').innerHTML = `<p>Error: ${error.message}</p>`;
+                        });
+                });
 
     </script>
     
