@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             fetch('https://iit-dh-library.onrender.com/books')
             .then(response => response.json())
             .then(data => {
-                console.log(data.length);
+                // console.log(data.length);
                 const booksList = document.getElementById('booksList');
                 booksList.innerHTML = '';
                 // document.getElementById('bookCountDisplay').textContent = `Total Books: ${data.length}`;
@@ -680,7 +680,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         announcementList.appendChild(li);
 
                         delete_announcement.addEventListener('click' , function() {
-                            console.log(announcement._id.$oid);
+                            // console.log(announcement._id.$oid);
                             window.scrollTo({
                                 top: 0,
                                 left: 0,
@@ -821,7 +821,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
         function handleRequest(entryId, action , check) {
-            console.log(entryId.$oid);
+            // console.log(entryId.$oid);
             if (action === 'delete') {
                 fetch(`https://iit-dh-library.onrender.com/delete/${entryId.$oid}`, {
                     method: 'POST',
@@ -980,7 +980,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         
 
         function initCharts() {
-            console.log("Total issued books (in initCharts):", total_issued_books); // Debugging: log the new value inside initCharts
+            // console.log("Total issued books (in initCharts):", total_issued_books); // Debugging: log the new value inside initCharts
 
             new Chart(document.getElementById('borrowedBooksChart'), {
                 type: 'bar',
@@ -1082,7 +1082,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
 
         function bookReturned(id){
-            console.log(id);
+            // console.log(id);
             showLoading();
             fetch(`https://iit-dh-library.onrender.com/book_returned/${id}` ,{
                 method: 'POST',
@@ -1255,7 +1255,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ bt: booktitle , ba: bookauth , bdesc: bookdesc , bg: bookgenre, bdept: bookdept, bc: bookcount, bp: bookpub }),
+                        body: JSON.stringify({ bt: booktitle , ba: bookauth , bdesc: bookdesc , bg: bookgenre, bdept: bookdept, bc: parseInt(bookcount, 10), bp: bookpub }),
                     })
                     .then(response => response.json())
                     .then(data => {

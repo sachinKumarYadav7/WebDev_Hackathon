@@ -21,6 +21,12 @@
         /* .navbar-nav .nav-link {
             color: #fff !important;
         } */
+        /* a{
+            color: whitesmoke;
+        }
+        a:hover{
+            color: whitesmoke;
+        } */
         .nav-link.active {
             background-color: #8e24aa;
         }
@@ -123,6 +129,12 @@
         .dark-mode .nav-link.active {
             background-color: #444444;
         }
+        a{
+            color: #ffffff !important;
+        }
+        /* a:hover{
+            color: whitesmoke;
+        } */
 
         /* .dark-mode .alert {
             background-color: #333333;
@@ -161,7 +173,7 @@
 <body>
 
 
-    <nav id="navbar" class="navbar navbar-expand-lg sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <a class="navbar-brand" href="#">
             <img src="../static/images/iitdh.png" alt="Institute Logo">
         </a>
@@ -368,8 +380,8 @@
                         let card;
                         
 
-                        if(book.count === 0){
-                            console.log(book);
+                        if(parseInt(book.count, 10) === 0){
+                            // console.log(book);
                             card = `
                                 <div class="col-md-4" >
                                     <div class="carda">
@@ -409,7 +421,7 @@
                         const bookTitle = $(this).data('title');
                         genre_for_issreq = $(this).data('genre');
 
-                        console.log(`gen = ${genre_for_issreq}`);
+                        // console.log(`gen = ${genre_for_issreq}`);
                         $('#modalContent').text(`Do you want to issue the book: ${bookTitle}?`);
                         $('#issueModal').modal('show');
                         $('#bookname').data('title', bookTitle); 
@@ -469,7 +481,7 @@
                 const startIndex = issueText.indexOf(':') + 2;
                 const endIndex = issueText.indexOf('?');
                 const bookTitle = issueText.slice(startIndex, endIndex);
-                console.log(bookTitle.trim()); 
+                // console.log(bookTitle.trim()); 
                 var loading = document.getElementById("loading");
 
                 loading.style.display = "block";
@@ -591,7 +603,7 @@
                             let card;
                             loading.style.display = "none"; 
 
-                            if(book.count === 0){
+                            if(parseInt(book.count, 10) === 0){
                                 card = `
                                 <div class="col-md-4">
                                     <div class="carda">
@@ -637,7 +649,7 @@
 
                     $('#cissue').click(function() {
                         const bookTitle2 = $(this).data('title');
-                        console.log(`${bookTitle2}`);
+                        // console.log(`${bookTitle2}`);
                     });
                 })
                 .catch((error) => {
@@ -667,8 +679,8 @@
                 loading.style.zIndex = "9999";
                 loading.style.backdropFilter = "blur(5px)";
 
-                console.log("Genre: " + genre);
-                console.log("Department: " + dept);
+                // console.log("Genre: " + genre);
+                // console.log("Department: " + dept);
 
                 var query = {
                     genre: genre,
@@ -699,7 +711,7 @@
                             let card;
                             loading.style.display = "none"; 
 
-                            if(book.count === 0){
+                            if(parseInt(book.count, 10) === 0){
                                 card = `
                                 <div class="col-md-4">
                                     <div class="carda">
@@ -747,7 +759,7 @@
 
                     document.getElementById('cissue').addEventListener('click', function() {
                         const bookTitle2 = this.getAttribute('data-title');
-                        console.log(`${bookTitle2}`);
+                        // console.log(`${bookTitle2}`);
                     });
                 })
                 .catch((error) => {

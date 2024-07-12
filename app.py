@@ -534,14 +534,19 @@ def searchbydeptngenre():
 @app.route('/add_new_book' ,methods=['POST'])
 def add_new_book():
     data = request.get_json()
+    try:
+        book_count = int(data['bc'])
+    except ValueError:
+        return jsonify({"error": "Invalid count value, must be an integer"}), 400
+    
     new_book = {
-        "title" : data['bt'],
-        "description" : data['bdesc'],
-        "author" : data['ba'],
-        "genre" : data['bg'],
-        "department" : data['bdept'],
-        "count" : data['bc'],
-        "publisher" : data['bp']
+        "title": data['bt'],
+        "description": data['bdesc'],
+        "author": data['ba'],
+        "genre": data['bg'],
+        "department": data['bdept'],
+        "count": book_count,  # Ensure this is an int
+        "publisher": data['bp']
     }
     new_book_id = b.insert_one(new_book).inserted_id
     return jsonify({"message": "issue req added", "id": str(new_book_id)}), 201
