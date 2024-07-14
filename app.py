@@ -310,6 +310,36 @@ def admin_home():
     return render_template('admin_dash.html', user_name=user_name)
 
 
+#----------------------------------Review Book---------------------------------------------------------
+
+@app.route('/review')
+def review():
+    return render_template('review.html')
+
+@app.route('/submit_review', methods=['POST'])
+def submit_review():
+    try:
+        data = request.get_json()
+        book_id = data['book_id']
+        review_text = data['review']
+        review_rating = int(data['rating'])
+        user = session.get('user')
+
+        review = {
+            'user_id': user['email'],
+            'book_id': book_id,
+            'review': review_text,
+            'rating': review_rating,
+            'timestamp': datetime.utcnow().isoformat()
+        }
+
+        client['reviews']['user_reviews'].insert_one(review)
+        return jsonify({'message': 'Review submitted successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': f'Failed to submit review: {str(e)}'}), 500
+
+#-------------------------------------Review Book End-----------------------------------------------------------------------------
+
 @app.route('/logout')
 def logout():
     session.pop('user', None)

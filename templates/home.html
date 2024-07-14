@@ -185,10 +185,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item " id="bell">
-                    <a class="nav-link active" id="dash" href="#" >Dashboard</a>
+                    <a class="nav-link active" id="dash" href="#" >Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link " href="#" id="search_bar" >Explore Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('review') }}" id="review_book">Review Book</a>
                 </li>
             </ul>
             {% if session.logged_in %}
@@ -200,7 +203,7 @@
                 </li>
                 <li class="nav-item">
                     <span class="navbar-text">
-                        Welcome, {{ session.user.name }}
+                       
                     </span>
                 </li>
                 <form class="form-inline my-2 ml-2 my-lg-0">
@@ -229,7 +232,7 @@
     <div id="content">
         <div class="container" id="main-container">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Dashboard</h1>
+                <h4 class="h4">Welcome, {{ session.user.name }}</h4>
             </div>  
             
             <div class="grid-container">
@@ -322,6 +325,9 @@
             </div>
         </div>
 
+        
+        
+
         <div class="modal fade" id="show_rem" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
@@ -337,6 +343,10 @@
                 
               </div>
             </div>
+        </div>
+
+        <div class="footer">
+            Copyright &copy; 2024 &mdash; Boring-Asylum
         </div>
 
     </div>
@@ -959,90 +969,91 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-                    const advertisements = document.querySelectorAll('.advertisement');
-                    let currentAdIndex = 0;
-                
-                    function showNextAd() {
-                        advertisements[currentAdIndex].classList.remove('active');
-                        currentAdIndex = (currentAdIndex + 1) % advertisements.length;
-                        advertisements[currentAdIndex].classList.add('active');
-                    }
-                
-                    advertisements[currentAdIndex].classList.add('active');
-                    setInterval(showNextAd, 5000);
-                
-                    // Fetching recommendations
-                    const userId = 3; // Replace with dynamic user_id as needed
-                    const title = "Introduction to Algorithms"; // Replace with dynamic title as needed
-                
-                    // Fetch hybrid recommendations
-                    fetch(`/recommend?title=${title}&user_id=${userId}&num_recommendations=3`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`Network response was not ok: ${response.statusText}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            let booksDiv = document.getElementById('recommended-books');
-                            booksDiv.innerHTML = ''; // Clear any previous content
-                            data.forEach(book => {
-                                let bookDiv = document.createElement('div');
-                                bookDiv.classList.add('book');
-                                bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
-                                booksDiv.appendChild(bookDiv);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('There was a problem with the fetch operation:', error);
-                            let booksDiv = document.getElementById('recommended-books');
-                            booksDiv.innerHTML = 'Failed to load recommendations.';
-                        });
-                
-                    // Fetch content-based recommendations
-                    fetch(`/recommend1?title=${title}&num_recommendations=3`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`Network response was not ok: ${response.statusText}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            let booksDiv = document.getElementById('content-recommended');
-                            booksDiv.innerHTML = ''; // Clear any previous content
-                            data.forEach(book => {
-                                let bookDiv = document.createElement('div');
-                                bookDiv.classList.add('book');
-                                bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
-                                booksDiv.appendChild(bookDiv);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('There was a problem with the fetch operation:', error);
-                            let booksDiv = document.getElementById('content-recommended');
-                            booksDiv.innerHTML = 'Failed to load recommendations.';
-                        });
+    const advertisements = document.querySelectorAll('.advertisement');
+    let currentAdIndex = 0;
 
-                        // Branch Wise Reccomendation
-                        fetch('/recommend2')
-                        .then(response => response.json())
-                        .then(data => {
-                            let recommendationsDiv = document.getElementById('branch-recommendations');
-                            if (data.error) {
-                                recommendationsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
-                            } else {
-                                let recommendationsList = '<ul>';
-                                data.forEach(book => {
-                                    recommendationsList += `<li>${book}</li>`;
-                                });
-                                recommendationsList += '</ul>';
-                                recommendationsDiv.innerHTML = recommendationsList;
-                            }
-                        })
-                        .catch(error => {
-                            document.getElementById('branch-recommendations').innerHTML = `<p>Error: ${error.message}</p>`;
-                        });
+    function showNextAd() {
+        advertisements[currentAdIndex].classList.remove('active');
+        currentAdIndex = (currentAdIndex + 1) % advertisements.length;
+        advertisements[currentAdIndex].classList.add('active');
+    }
+
+    advertisements[currentAdIndex].classList.add('active');
+    setInterval(showNextAd, 5000);
+
+    // Fetching recommendations
+    const userId = 220010052; // Replace with dynamic user_id as needed
+    const title = "Introduction to Algorithms"; // Replace with dynamic title as needed
+
+    // Fetch hybrid recommendations
+    fetch(`/recommend?title=${title}&user_id=${userId}&num_recommendations=3`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            let booksDiv = document.getElementById('recommended-books');
+            booksDiv.innerHTML = '<p>Here are some books based on what other student of same interest are studing :</p>'; // Add personalized message
+            data.forEach(book => {
+                let bookDiv = document.createElement('div');
+                bookDiv.classList.add('book');
+                bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
+                booksDiv.appendChild(bookDiv);
+            });
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            let booksDiv = document.getElementById('recommended-books');
+            booksDiv.innerHTML = 'Failed to load recommendations.';
+        });
+
+    // Fetch content-based recommendations
+    fetch(`/recommend1?title=${title}&num_recommendations=3`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            let booksDiv = document.getElementById('content-recommended');
+            booksDiv.innerHTML = '<p>Here are some books based on your search history :</p>'; // Add personalized message
+            data.forEach(book => {
+                let bookDiv = document.createElement('div');
+                bookDiv.classList.add('book');
+                bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
+                booksDiv.appendChild(bookDiv);
+            });
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            let booksDiv = document.getElementById('content-recommended');
+            booksDiv.innerHTML = 'Failed to load recommendations.';
+        });
+
+    // Branch Wise Recommendations
+    fetch('/recommend2')
+        .then(response => response.json())
+        .then(data => {
+            let recommendationsDiv = document.getElementById('branch-recommendations');
+            if (data.error) {
+                recommendationsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+            } else {
+                recommendationsDiv.innerHTML = '<p>Just look what students from your branch are studying:</p>'; // Add personalized message
+                let recommendationsList = '<ul>';
+                data.forEach(book => {
+                    recommendationsList += `<li>${book}</li>`;
                 });
+                recommendationsList += '</ul>';
+                recommendationsDiv.innerHTML += recommendationsList;
+            }
+        })
+        .catch(error => {
+            document.getElementById('branch-recommendations').innerHTML = `<p>Error: ${error.message}</p>`;
+        });
+});
 
     </script>
     

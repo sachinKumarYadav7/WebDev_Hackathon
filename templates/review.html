@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Books</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            padding-top: 20px;
+        }
+        .book-list {
+            margin-top: 20px;
+        }
+        .review-modal .modal-dialog {
+            max-width: 80%; /* Adjust the maximum width as needed */
+        }
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #222;
+            color: #fff;
+        }
+        .navbar-dark .navbar-brand, .navbar-dark .navbar-nav .nav-link {
+            color: #fff;
+        }
+        .navbar-dark .navbar-toggler-icon {
+            background-color: #fff;
+        }
+        .navbar-dark .form-inline .nav-link {
+            color: #fff;
+        }
+        .modal-content.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+        .list-group-item {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .list-group-item-light {
+            background-color: #fff; /* Light background color for list items */
+            color: #333; /* Dark text color */
+        }
+        .list-group-item-dark {
+            background-color: #333; /* Dark background color for list items */
+            color: #fff; /* Light text color */
+        }
+        .list-group-item-light:hover {
+            background-color: #f0f0f0; /* Lighter background color on hover */
+        }
+        .list-group-item-dark:hover {
+            background-color: #444; /* Darker background color on hover */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="" alt="Institute Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="search_bar">Explore Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/review">Review Books</a>
+                </li>
+            </ul>
+            {% if session.logged_in %}
+            <ul class="navbar-nav ml-auto">
+                <li>
+                    <a class="navbar-brand" href="#" id="mode">
+                        <img src="" alt="Mode Toggle" id="imgmode">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <span class="navbar-text">
+                       
+                    </span>
+                </li>
+                <form class="form-inline my-2 ml-2 my-lg-0">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </form>
+            </ul>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container book-list">
+        <h2>Your Borrowed Books</h2>
+        <div id="booksContainer" class="list-group">
+            <!-- Book items will be populated here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal fade review-modal" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewModalLabel">Write a Review</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="reviewForm">
+                        <div class="form-group">
+                            <label for="reviewText">Review</label>
+                            <textarea class="form-control" id="reviewText" rows="4" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Rating</label><br>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="reviewRating" id="rating1" value="1">
+                                <label class="form-check-label" for="rating1">1 - Poor</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="reviewRating" id="rating2" value="2">
+                                <label class="form-check-label" for="rating2">2 - Fair</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="reviewRating" id="rating3" value="3">
+                                <label class="form-check-label" for="rating3">3 - Good</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="reviewRating" id="rating4" value="4">
+                                <label class="form-check-label" for="rating4">4 - Very Good</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="reviewRating" id="rating5" value="5">
+                                <label class="form-check-label" for="rating5">5 - Excellent</label>
+                            </div>
+                        </div>
+                        <input type="hidden" id="bookId">
+                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Function to toggle dark mode
+            $("#mode").click(function() {
+                $("body").toggleClass("dark-mode");
+                $(".navbar").toggleClass("navbar-dark bg-dark");
+                $(".modal-content").toggleClass("dark-mode");
+                $(".list-group-item").toggleClass("list-group-item-dark list-group-item-light"); // Toggle dark mode for list items
+                // Adjust other elements as needed
+            });
+
+            // Fetch borrowed books
+            $.get("/load_acc_by_user", function(data) {
+                var books = JSON.parse(data);
+                var booksContainer = $("#booksContainer");
+
+                if (books.length === 0) {
+                    booksContainer.append('<p class="list-group-item">No books borrowed.</p>');
+                } else {
+                    books.forEach(function(book) {
+                        var bookItem = `
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5>${book.req.bookname}</h5>
+                                    <p>${book.req.author}</p>
+                                </div>
+                                <button class="btn btn-primary review-btn" data-book-id="${book._id}" data-book-title="${book.req.bookname}">Review</button>
+                            </div>
+                        `;
+                        booksContainer.append(bookItem);
+                    });
+                }
+            });
+
+            // Show modal on review button click
+            $(document).on("click", ".review-btn", function() {
+                var bookId = $(this).data("book-id");
+                var bookTitle = $(this).data("book-title");
+                $("#reviewModalLabel").text("Write a Review for " + bookTitle);
+                $("#bookId").val(bookId);
+                $("#reviewModal").modal("show");
+            });
+
+            // Handle review form submission
+            $("#reviewForm").submit(function(event) {
+                event.preventDefault();
+                var bookId = $("#bookId").val();
+                var reviewText = $("#reviewText").val();
+                var reviewRating = $("input[name='reviewRating']:checked").val();
+
+                $.post("/submit_review", {
+                    book_id: bookId,
+                    review: reviewText,
+                    rating: reviewRating
+                }, function(response) {
+                    alert(response.message);
+                    $("#reviewModal").modal("hide");
+                }).fail(function(response) {
+                    alert("Failed to submit review: " + response.responseJSON.message);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
