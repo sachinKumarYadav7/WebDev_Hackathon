@@ -19,16 +19,16 @@ body {
   display: block;
 }
 
-.new-container.visible {
+/* .new-container.visible {
   display: block;
   opacity: 0;
   transform: translateY(20px);
-}
+} */
 
-.visible {
+/* .visible {
   opacity: 1;
   transform: translateY(0);
-}
+} */
 
 .navbar {
   /* margin-bottom: 20px; */
@@ -311,44 +311,55 @@ transition: background-color 0.3s;
 #filterForm button:hover {
 background-color: #0056b3;
 }
-
 #main-container {
-opacity: 1;
-visibility: visible;
-transition: opacity 1s ease, visibility 1s ease, transform 1s ease;
-transform: translateY(0px);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 1s ease, visibility 1s ease, transform 1s ease;
+  transform: translateY(20px);
 }
 
 #main-container.hidden {
-opacity: 0;
-visibility: hidden;
-transform: translateY(-20px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(0px);
 }
 
-#main-container.backtodash {
-opacity: 1;
-visibility: visible;
-transform: translateY(0px);
+#main-container.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(20px);
 }
 
-#new-container {
-opacity: 0;
-visibility: hidden;
-transition: opacity 1s ease, visibility 1s ease, transform 1s ease;
-transform: translateY(20px);
+#new-container, #review {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease, visibility 1s ease, transform 1s ease;
+  transform: translateY(20px);
 }
 
-#new-container.visible {
-opacity: 1;
-visibility: visible;
-transform: translateY(0px);
+#new-container.visible, #review.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0px);
 }
 
+#new-container.hidden, #review.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+}
+
+/* #review.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+} */
+/* 
 #new-container.backtodash {
 opacity: 0;
 visibility: hidden;
 transform: translateY(20px);
-}
+} */
 
 
 

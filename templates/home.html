@@ -18,15 +18,6 @@
         .navbar-brand img {
             height: 40px;
         }
-        /* .navbar-nav .nav-link {
-            color: #fff !important;
-        } */
-        /* a{
-            color: whitesmoke;
-        }
-        a:hover{
-            color: whitesmoke;
-        } */
         .nav-link.active {
             background-color: #8e24aa;
         }
@@ -46,6 +37,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 10px;
         }
+        
         .notfound {
             display: flex;
             justify-content: center;
@@ -132,15 +124,6 @@
         a{
             color: #ffffff !important;
         }
-        /* a:hover{
-            color: whitesmoke;
-        } */
-
-        /* .dark-mode .alert {
-            background-color: #333333;
-            color: #ffffff;
-        } */
-
         .dark-mode .card, .dark-mode #announcement {
             background-color: #444444;
             color: #ffffff;
@@ -165,9 +148,17 @@
             background-color: #333333;
             color: #ffffff;
         }
-
-
-
+        .dark-mode .list-group-item {
+            background-color: #333333;
+            color: #ffffff;
+        }
+        .footer{
+            text-align: center;
+            justify-content: center;
+            margin: 10px;
+            color: #c0b9b9;
+        }
+        
     </style>
 </head>
 <body>
@@ -185,10 +176,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item " id="bell">
-                    <a class="nav-link active" id="dash" href="#" >Dashboard</a>
+                    <a class="nav-link active" id="dash" href="#" >Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link " href="#" id="search_bar" >Explore Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="review_book">Review Book</a>
                 </li>
             </ul>
             {% if session.logged_in %}
@@ -198,11 +192,7 @@
                         <img src="../static/images/moon.png" alt="Mode Toggle" id="imgmode">
                     </a>
                 </li>
-                <li class="nav-item">
-                    <span class="navbar-text">
-                        Welcome, {{ session.user.name }}
-                    </span>
-                </li>
+            
                 <form class="form-inline my-2 ml-2 my-lg-0">
                     <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                 </form>
@@ -229,7 +219,7 @@
     <div id="content">
         <div class="container" id="main-container">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Dashboard</h1>
+                <h4 class="h4">Welcome, {{ session.user.name }}</h4>
             </div>  
             
             <div class="grid-container">
@@ -301,6 +291,64 @@
             </div>
         </div>
 
+        <div id="review" style="display:none;">
+            <div class="container book-list">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h4 class="h4">Your Borrowed Books</h4>
+                </div>  
+                <div id="booksContainer" class="list-group">
+                    <!-- Book items will be populated here by JavaScript -->
+                </div>
+            </div>
+
+        </div>
+        <div class="modal fade review-modal" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reviewModalLabel">Write a Review</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="reviewForm">
+                            <div class="form-group">
+                                <label for="reviewText">Review</label>
+                                <textarea class="form-control" id="reviewText" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Rating</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="reviewRating" id="rating1" value="1">
+                                    <label class="form-check-label" for="rating1">1 - Poor</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="reviewRating" id="rating2" value="2">
+                                    <label class="form-check-label" for="rating2">2 - Fair</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="reviewRating" id="rating3" value="3">
+                                    <label class="form-check-label" for="rating3">3 - Good</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="reviewRating" id="rating4" value="4">
+                                    <label class="form-check-label" for="rating4">4 - Very Good</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="reviewRating" id="rating5" value="5">
+                                    <label class="form-check-label" for="rating5">5 - Excellent</label>
+                                </div>
+                            </div>
+                            <input type="hidden" id="bookId">
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
         <div class="modal fade" id="issueModal" tabindex="-1" role="dialog" aria-labelledby="issueModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -322,6 +370,9 @@
             </div>
         </div>
 
+        
+        
+
         <div class="modal fade" id="show_rem" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
@@ -337,6 +388,10 @@
                 
               </div>
             </div>
+        </div>
+
+        <div class="footer">
+            Copyright &copy; 2024 &mdash; Boring-Asylum
         </div>
 
     </div>
@@ -959,90 +1014,139 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-                    const advertisements = document.querySelectorAll('.advertisement');
-                    let currentAdIndex = 0;
-                
-                    function showNextAd() {
-                        advertisements[currentAdIndex].classList.remove('active');
-                        currentAdIndex = (currentAdIndex + 1) % advertisements.length;
-                        advertisements[currentAdIndex].classList.add('active');
-                    }
-                
-                    advertisements[currentAdIndex].classList.add('active');
-                    setInterval(showNextAd, 5000);
-                
-                    // Fetching recommendations
-                    const userId = 3; // Replace with dynamic user_id as needed
-                    const title = "Introduction to Algorithms"; // Replace with dynamic title as needed
-                
-                    // Fetch hybrid recommendations
-                    fetch(`/recommend?title=${title}&user_id=${userId}&num_recommendations=3`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`Network response was not ok: ${response.statusText}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            let booksDiv = document.getElementById('recommended-books');
-                            booksDiv.innerHTML = ''; // Clear any previous content
-                            data.forEach(book => {
-                                let bookDiv = document.createElement('div');
-                                bookDiv.classList.add('book');
-                                bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
-                                booksDiv.appendChild(bookDiv);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('There was a problem with the fetch operation:', error);
-                            let booksDiv = document.getElementById('recommended-books');
-                            booksDiv.innerHTML = 'Failed to load recommendations.';
-                        });
-                
-                    // Fetch content-based recommendations
-                    fetch(`/recommend1?title=${title}&num_recommendations=3`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`Network response was not ok: ${response.statusText}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            let booksDiv = document.getElementById('content-recommended');
-                            booksDiv.innerHTML = ''; // Clear any previous content
-                            data.forEach(book => {
-                                let bookDiv = document.createElement('div');
-                                bookDiv.classList.add('book');
-                                bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
-                                booksDiv.appendChild(bookDiv);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('There was a problem with the fetch operation:', error);
-                            let booksDiv = document.getElementById('content-recommended');
-                            booksDiv.innerHTML = 'Failed to load recommendations.';
-                        });
+            const advertisements = document.querySelectorAll('.advertisement');
+            let currentAdIndex = 0;
 
-                        // Branch Wise Reccomendation
-                        fetch('/recommend2')
-                        .then(response => response.json())
-                        .then(data => {
-                            let recommendationsDiv = document.getElementById('branch-recommendations');
-                            if (data.error) {
-                                recommendationsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
-                            } else {
-                                let recommendationsList = '<ul>';
-                                data.forEach(book => {
-                                    recommendationsList += `<li>${book}</li>`;
-                                });
-                                recommendationsList += '</ul>';
-                                recommendationsDiv.innerHTML = recommendationsList;
-                            }
-                        })
-                        .catch(error => {
-                            document.getElementById('branch-recommendations').innerHTML = `<p>Error: ${error.message}</p>`;
-                        });
+            function showNextAd() {
+                advertisements[currentAdIndex].classList.remove('active');
+                currentAdIndex = (currentAdIndex + 1) % advertisements.length;
+                advertisements[currentAdIndex].classList.add('active');
+            }
+
+            advertisements[currentAdIndex].classList.add('active');
+            setInterval(showNextAd, 5000);
+
+            // Fetching recommendations
+            const userId = 220010052; // Replace with dynamic user_id as needed
+            const title = "Introduction to Algorithms"; // Replace with dynamic title as needed
+
+            // Fetch hybrid recommendations
+            fetch(`/recommend?title=${title}&user_id=${userId}&num_recommendations=3`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let booksDiv = document.getElementById('recommended-books');
+                    booksDiv.innerHTML = '<p>Here are some books based on what other student of same interest are studing :</p>'; // Add personalized message
+                    data.forEach(book => {
+                        let bookDiv = document.createElement('div');
+                        bookDiv.classList.add('book');
+                        bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
+                        booksDiv.appendChild(bookDiv);
+                    });
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                    let booksDiv = document.getElementById('recommended-books');
+                    booksDiv.innerHTML = 'Failed to load recommendations.';
                 });
+
+            // Fetch content-based recommendations
+            fetch(`/recommend1?title=${title}&num_recommendations=3`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let booksDiv = document.getElementById('content-recommended');
+                    booksDiv.innerHTML = '<p>Here are some books based on your search history :</p>'; // Add personalized message
+                    data.forEach(book => {
+                        let bookDiv = document.createElement('div');
+                        bookDiv.classList.add('book');
+                        bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
+                        booksDiv.appendChild(bookDiv);
+                    });
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                    let booksDiv = document.getElementById('content-recommended');
+                    booksDiv.innerHTML = 'Failed to load recommendations.';
+                });
+
+            // Branch Wise Recommendations
+            fetch('/recommend2')
+                .then(response => response.json())
+                .then(data => {
+                    let recommendationsDiv = document.getElementById('branch-recommendations');
+                    if (data.error) {
+                        recommendationsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                    } else {
+                        recommendationsDiv.innerHTML = '<p>Just look what students from your branch are studying:</p>'; // Add personalized message
+                        let recommendationsList = '<ul>';
+                        data.forEach(book => {
+                            recommendationsList += `<li>${book}</li>`;
+                        });
+                        recommendationsList += '</ul>';
+                        recommendationsDiv.innerHTML += recommendationsList;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('branch-recommendations').innerHTML = `<p>Error: ${error.message}</p>`;
+                });
+        });
+
+            $.get("/load_acc_by_user", function(data) {
+                var books = JSON.parse(data);
+                var booksContainer = $("#booksContainer");
+
+                if (books.length === 0) {
+                    booksContainer.append('<p class="list-group-item">No books borrowed.</p>');
+                } else {
+                    books.forEach(function(book) {
+                        var bookItem = `
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5><strong>Book: </strong>${book.req.bookname}</h5>
+                                    <span>${book.req.genre}</span>
+                                </div>
+                                <button class="btn btn-primary review-btn" data-book-id="${book._id}" data-book-title="${book.req.bookname}">Review</button>
+                            </div>
+                        `;
+                        booksContainer.append(bookItem);
+                    });
+                }
+            });
+
+            $(document).on("click", ".review-btn", function() {
+                var bookId = $(this).data("book-id");
+                var bookTitle = $(this).data("book-title");
+                $("#reviewModalLabel").text("Write a Review for " + bookTitle);
+                $("#bookId").val(bookId);
+                $("#reviewModal").modal("show");
+            });
+
+            $("#reviewForm").submit(function(event) {
+                event.preventDefault();
+                var bookId = $("#bookId").val();
+                var reviewText = $("#reviewText").val();
+                var reviewRating = $("input[name='reviewRating']:checked").val();
+
+                $.post("/submit_review", {
+                    book_id: bookId,
+                    review: reviewText,
+                    rating: reviewRating
+                }, function(response) {
+                    alert(response.message);
+                    $("#reviewModal").modal("hide");
+                }).fail(function(response) {
+                    alert("Failed to submit review: " + response.responseJSON.message);
+                });
+            });
 
     </script>
     

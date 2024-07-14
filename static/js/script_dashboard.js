@@ -1,40 +1,76 @@
 document.getElementById("search_bar").addEventListener("click", function() {
-  const mcontainer = document.getElementById('main-container');
-  const ncontainer = document.getElementById('new-container');
+    const mcontainer = document.getElementById('main-container');
+    const ncontainer = document.getElementById('new-container');
+    const review_container = document.getElementById('review');
 
-  document.querySelectorAll('.nav-link').forEach(link => {
+    document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
     });
     document.querySelector(`#search_bar`).classList.add('active');
 
-  mcontainer.classList.add('hidden');
-  setTimeout(function() {
-      mcontainer.style.display = 'none';
-      ncontainer.style.display = 'block';
-      setTimeout(function() {
-          ncontainer.classList.add('visible');
-      }, 150);
-      
-  }, 100);
+    mcontainer.classList.add('hidden');
+    review_container.classList.add('hidden');
+
+    setTimeout(function() {
+        mcontainer.style.display = 'none';
+        review_container.style.display = 'none';
+
+        ncontainer.style.display = 'block';
+        setTimeout(function() {
+            ncontainer.classList.add('visible');
+            ncontainer.classList.remove('hidden');
+        }, 100);
+    }, 100);
 });
 
 document.getElementById("dash").addEventListener("click", function() {
-  const mcontainer = document.getElementById('main-container');
-  const ncontainer = document.getElementById('new-container');
+    const mcontainer = document.getElementById('main-container');
+    const ncontainer = document.getElementById('new-container');
+    const review_container = document.getElementById('review');
 
-  document.querySelectorAll('.nav-link').forEach(link => {
+    document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
     });
     document.querySelector(`#dash`).classList.add('active');
 
-  ncontainer.classList.remove('visible');
-  setTimeout(function() {
-      ncontainer.style.display = 'none';
-      mcontainer.style.display = 'block';
-      setTimeout(function() {
-          mcontainer.classList.remove('hidden');
-      }, 150); 
-  }, 100);
+    ncontainer.classList.add('hidden');
+    review_container.classList.add('hidden');
+
+    setTimeout(function() {
+        ncontainer.style.display = 'none';
+        review_container.style.display = 'none';
+
+        mcontainer.style.display = 'block';
+        setTimeout(function() {
+            mcontainer.classList.add('visible');
+            mcontainer.classList.remove('hidden');
+        }, 100); 
+    }, 100);
+});
+
+document.getElementById("review_book").addEventListener("click", function() {
+    const mcontainer = document.getElementById('main-container');
+    const ncontainer = document.getElementById('new-container');
+    const review_container = document.getElementById('review');
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    document.querySelector(`#review_book`).classList.add('active');
+
+    mcontainer.classList.add('hidden');
+    ncontainer.classList.add('hidden');
+
+    setTimeout(function() {
+        mcontainer.style.display = 'none';
+        ncontainer.style.display = 'none';
+
+        review_container.style.display = 'block';
+        setTimeout(function() {
+            review_container.classList.add('visible');
+            review_container.classList.remove('hidden');
+        }, 100); 
+    }, 100);
 });
 
 
