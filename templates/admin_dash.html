@@ -139,7 +139,7 @@
                     <a class="nav-link" href="#" onclick="showSection('manageBooks')">Manage Books</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="showSection('requestedBooks')">Requested Books</a>
+                    <a class="nav-link" href="#" onclick="showSection('requestedBooks')" id="req_book">Requested Books</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" onclick="showSection('announcements')">Announcements</a>
@@ -732,7 +732,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 .then(response => response.json())
                 .then(data => {
                     const requestList = document.getElementById('requestedBooksList');
+                    const req_book_button = document.getElementById('req_book');
                     requestList.innerHTML = ''; 
+
+                    req_book_button.innerHTML = `Requested Books (${data.length})`;
 
                     if(data.length === 0) {
                         const noRequestMessage = document.createElement('li');
@@ -740,6 +743,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         noRequestMessage.textContent = 'No issue requests.';
                         requestList.appendChild(noRequestMessage);
                     } else {
+                        
                         data.forEach(req => {
                             const listItem = document.createElement('li');
                             listItem.className = 'list-group-item d-flex justify-content-between align-items-left';
