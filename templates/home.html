@@ -182,7 +182,11 @@
                     <a class="nav-link " href="#" id="search_bar" >Explore Books</a>
                 </li>
                 <li class="nav-item">
+<<<<<<< HEAD
                     <a class="nav-link" href="#" id="review_book">Review Book</a>
+=======
+                    <a class="nav-link" href="{{ url_for('review') }}" id="review_book">Review Book</a>
+>>>>>>> a7d764baa69de82eb0c92805fd1ea7113ee3c1b9
                 </li>
             </ul>
             {% if session.logged_in %}
@@ -192,7 +196,15 @@
                         <img src="../static/images/moon.png" alt="Mode Toggle" id="imgmode">
                     </a>
                 </li>
+<<<<<<< HEAD
             
+=======
+                <li class="nav-item">
+                    <span class="navbar-text">
+                       
+                    </span>
+                </li>
+>>>>>>> a7d764baa69de82eb0c92805fd1ea7113ee3c1b9
                 <form class="form-inline my-2 ml-2 my-lg-0">
                     <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                 </form>
@@ -1014,6 +1026,7 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
+<<<<<<< HEAD
             const advertisements = document.querySelectorAll('.advertisement');
             let currentAdIndex = 0;
 
@@ -1052,7 +1065,93 @@
                     console.error('There was a problem with the fetch operation:', error);
                     let booksDiv = document.getElementById('recommended-books');
                     booksDiv.innerHTML = 'Failed to load recommendations.';
+=======
+    const advertisements = document.querySelectorAll('.advertisement');
+    let currentAdIndex = 0;
+
+    function showNextAd() {
+        advertisements[currentAdIndex].classList.remove('active');
+        currentAdIndex = (currentAdIndex + 1) % advertisements.length;
+        advertisements[currentAdIndex].classList.add('active');
+    }
+
+    advertisements[currentAdIndex].classList.add('active');
+    setInterval(showNextAd, 5000);
+
+    // Fetching recommendations
+    const userId = 220010052; // Replace with dynamic user_id as needed
+    const title = "Introduction to Algorithms"; // Replace with dynamic title as needed
+
+    // Fetch hybrid recommendations
+    fetch(`/recommend?title=${title}&user_id=${userId}&num_recommendations=3`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            let booksDiv = document.getElementById('recommended-books');
+            booksDiv.innerHTML = '<p>Here are some books based on what other student of same interest are studing :</p>'; // Add personalized message
+            data.forEach(book => {
+                let bookDiv = document.createElement('div');
+                bookDiv.classList.add('book');
+                bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
+                booksDiv.appendChild(bookDiv);
+            });
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            let booksDiv = document.getElementById('recommended-books');
+            booksDiv.innerHTML = 'Failed to load recommendations.';
+        });
+
+    // Fetch content-based recommendations
+    fetch(`/recommend1?title=${title}&num_recommendations=3`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            let booksDiv = document.getElementById('content-recommended');
+            booksDiv.innerHTML = '<p>Here are some books based on your search history :</p>'; // Add personalized message
+            data.forEach(book => {
+                let bookDiv = document.createElement('div');
+                bookDiv.classList.add('book');
+                bookDiv.innerHTML = `<strong>${book.title}</strong><br>by ${book.author}`;
+                booksDiv.appendChild(bookDiv);
+            });
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            let booksDiv = document.getElementById('content-recommended');
+            booksDiv.innerHTML = 'Failed to load recommendations.';
+        });
+
+    // Branch Wise Recommendations
+    fetch('/recommend2')
+        .then(response => response.json())
+        .then(data => {
+            let recommendationsDiv = document.getElementById('branch-recommendations');
+            if (data.error) {
+                recommendationsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+            } else {
+                recommendationsDiv.innerHTML = '<p>Just look what students from your branch are studying:</p>'; // Add personalized message
+                let recommendationsList = '<ul>';
+                data.forEach(book => {
+                    recommendationsList += `<li>${book}</li>`;
+>>>>>>> a7d764baa69de82eb0c92805fd1ea7113ee3c1b9
                 });
+                recommendationsList += '</ul>';
+                recommendationsDiv.innerHTML += recommendationsList;
+            }
+        })
+        .catch(error => {
+            document.getElementById('branch-recommendations').innerHTML = `<p>Error: ${error.message}</p>`;
+        });
+});
 
             // Fetch content-based recommendations
             fetch(`/recommend1?title=${title}&num_recommendations=3`)
