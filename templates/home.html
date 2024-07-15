@@ -1026,7 +1026,7 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-<<<<<<< HEAD
+
             const advertisements = document.querySelectorAll('.advertisement');
             let currentAdIndex = 0;
 
@@ -1065,7 +1065,7 @@
                     console.error('There was a problem with the fetch operation:', error);
                     let booksDiv = document.getElementById('recommended-books');
                     booksDiv.innerHTML = 'Failed to load recommendations.';
-=======
+
     const advertisements = document.querySelectorAll('.advertisement');
     let currentAdIndex = 0;
 
@@ -1142,7 +1142,7 @@
                 let recommendationsList = '<ul>';
                 data.forEach(book => {
                     recommendationsList += `<li>${book}</li>`;
->>>>>>> a7d764baa69de82eb0c92805fd1ea7113ee3c1b9
+
                 });
                 recommendationsList += '</ul>';
                 recommendationsDiv.innerHTML += recommendationsList;
